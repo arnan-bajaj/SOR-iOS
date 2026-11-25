@@ -33,6 +33,9 @@ struct HomeView: View {
         }
     }
 
+    /// The date tile (Next up) and the countdown ring (Next competition) share a width, so the titles beside them line up.
+    private static let leadWidth: CGFloat = 66
+
     // MARK: Header
 
     private var greeting: String {
@@ -138,7 +141,7 @@ struct HomeView: View {
                     Text(e.startDate.formatted(.dateTime.day())).font(.system(size: 28, weight: .bold, design: .rounded))
                     Text(e.startDate.formatted(.dateTime.month(.abbreviated))).font(.caption2.weight(.medium)).foregroundStyle(.secondary)
                 }
-                .frame(width: 62, height: 74)
+                .frame(width: Self.leadWidth, height: 74)
                 .background(c.opacity(0.16), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                 VStack(alignment: .leading, spacing: 5) {
                     Text("NEXT UP · \(relative(e))").font(.caption.weight(.bold)).foregroundStyle(c).tracking(0.5)
@@ -180,11 +183,11 @@ struct HomeView: View {
                 ZStack {
                     Ring(progress: 1 - Double(min(days, 120)) / 120, color: Brand.red, width: 7)
                     VStack(spacing: -2) {
-                        Text("\(days)").font(.system(size: 24, weight: .bold, design: .rounded)).monospacedDigit()
+                        Text("\(days)").font(.system(size: 21, weight: .bold, design: .rounded)).monospacedDigit().minimumScaleFactor(0.7)
                         Text(days == 1 ? "day" : "days").font(.caption2.weight(.medium)).foregroundStyle(.secondary)
                     }
                 }
-                .frame(width: 72, height: 72)
+                .frame(width: Self.leadWidth, height: Self.leadWidth)
                 VStack(alignment: .leading, spacing: 4) {
                     Label("Next competition", systemImage: "trophy.fill").font(.caption.weight(.bold)).foregroundStyle(Brand.red).textCase(.uppercase)
                     Text(c.title).font(.headline).multilineTextAlignment(.leading)
@@ -192,7 +195,7 @@ struct HomeView: View {
                 }
                 Spacer(minLength: 0)
             }
-            .padding(16)
+            .padding(14)
             .glass(22, tint: Brand.red)
         }
         .buttonStyle(PressableStyle())

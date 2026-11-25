@@ -116,7 +116,7 @@
 		F0390168978230B77939250E /* TaskDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetailView.swift; sourceTree = "<group>"; };
 		F36271FDFF9D627D2A062795 /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
 		F71A667531D9645724A36E12 /* DemoData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoData.swift; sourceTree = "<group>"; };
-		"TEMP_000827CF-E068-499E-AB96-11887DEEF233" /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		"TEMP_1AD88C0B-B01D-428A-A06E-8CA0D906A076" /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -253,10 +253,10 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		"TEMP_0CEC0249-F078-412A-9152-82C7C558CC8B" /* SOR-iOS */ = {
+		"TEMP_9CC55167-3803-4747-B0BF-FD78D540ACAC" /* SOR-iOS */ = {
 			isa = PBXGroup;
 			children = (
-				"TEMP_000827CF-E068-499E-AB96-11887DEEF233" /* Config.xcconfig */,
+				"TEMP_1AD88C0B-B01D-428A-A06E-8CA0D906A076" /* Config.xcconfig */,
 			);
 			path = "SOR-iOS";
 			sourceTree = "<group>";
@@ -431,7 +431,7 @@
 /* Begin XCBuildConfiguration section */
 		250D6B3BA437BE1BE9BE971E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = "TEMP_000827CF-E068-499E-AB96-11887DEEF233" /* Config.xcconfig */;
+			baseConfigurationReference = "TEMP_1AD88C0B-B01D-428A-A06E-8CA0D906A076" /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "$(WIDGET_ENTITLEMENTS)";
@@ -451,7 +451,7 @@
 		};
 		2E391173AC58FA6CD74EEDF8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = "TEMP_000827CF-E068-499E-AB96-11887DEEF233" /* Config.xcconfig */;
+			baseConfigurationReference = "TEMP_1AD88C0B-B01D-428A-A06E-8CA0D906A076" /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -538,7 +538,7 @@
 		};
 		7E90536DEBD3F51D5621A134 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = "TEMP_000827CF-E068-499E-AB96-11887DEEF233" /* Config.xcconfig */;
+			baseConfigurationReference = "TEMP_1AD88C0B-B01D-428A-A06E-8CA0D906A076" /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -618,7 +618,7 @@
 		};
 		F0BC86EB6C9C401F052D1AAB /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = "TEMP_000827CF-E068-499E-AB96-11887DEEF233" /* Config.xcconfig */;
+			baseConfigurationReference = "TEMP_1AD88C0B-B01D-428A-A06E-8CA0D906A076" /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "$(WIDGET_ENTITLEMENTS)";
