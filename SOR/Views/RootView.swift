@@ -120,6 +120,4 @@ struct MainTabs: View {
     }
 }
 
-#if DEBUG
 extension WebLink: Identifiable { var id: String { path } }
-#endif
