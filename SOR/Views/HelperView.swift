@@ -66,7 +66,7 @@ struct HelperView: View {
                     Text(model.canEdit ? "Or tell it what to change. Nothing changes until you tap Do it." : "Tasks, meetings, who's on what.").font(.caption).foregroundStyle(.secondary)
                 }
             }
-            Text("This runs on the team's own Gemini key, so every chat is saved and can be read to stop misuse. It can also get things wrong.")
+            Text("This runs on the team's own Gemini key, so we request that you do not misuse the helper feature. It can also get things wrong.")
                 .font(.caption).foregroundStyle(.secondary)
             if !helper.off.isEmpty { Label(helper.off, systemImage: "exclamationmark.circle").font(.caption).foregroundStyle(.orange) }
             if helper.items.isEmpty {

@@ -16,34 +16,28 @@ enum Brand {
     }
 }
 
-/// Soft colour pools behind every page. They drift slowly; with Reduce Motion they hold still.
+/// Soft colour pools behind every page, drawn as plain radial gradients.
+/// They used to drift (a 20 fps animation of three big blurred circles). On 2026-11-24 that made the iPhone's
+/// display server (backboardd) grow to 3.5 GB in a few minutes until iOS killed it: the screen flashed white and
+/// showed a spinner. Blurs and endless animation on full-screen layers live in that shared process, so: no `.blur`,
+/// no TimelineView, nothing that redraws on its own.
 struct AppBackground: View {
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.colorScheme) private var scheme
     var tint: Color = Brand.blue
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1 / 20, paused: reduceMotion)) { ctx in
-            let t = reduceMotion ? 0 : ctx.date.timeIntervalSinceReferenceDate
-            GeometryReader { geo in
-                let w = geo.size.width, h = geo.size.height
-                ZStack {
-                    Color.page
-                    pool(tint, size: w * 1.1, x: w * (0.15 + 0.08 * sin(t / 9)), y: h * (0.08 + 0.04 * cos(t / 11)))
-                    pool(Brand.red, size: w * 0.9, x: w * (0.95 + 0.06 * cos(t / 10)), y: h * (0.35 + 0.05 * sin(t / 13)))
-                    pool(Brand.violet, size: w * 1.0, x: w * (0.25 + 0.07 * cos(t / 12)), y: h * (0.85 + 0.04 * sin(t / 8)))
-                }
+        GeometryReader { geo in
+            let w = geo.size.width, h = geo.size.height
+            let a = scheme == .dark ? 0.26 : 0.16
+            ZStack {
+                Color.page
+                RadialGradient(colors: [tint.opacity(a), .clear], center: UnitPoint(x: 0.12, y: 0.06), startRadius: 0, endRadius: w * 0.95)
+                RadialGradient(colors: [Brand.red.opacity(a * 0.8), .clear], center: UnitPoint(x: 1.0, y: 0.38), startRadius: 0, endRadius: w * 0.85)
+                RadialGradient(colors: [Brand.violet.opacity(a * 0.9), .clear], center: UnitPoint(x: 0.2, y: 0.92), startRadius: 0, endRadius: max(w, h) * 0.6)
             }
         }
         .ignoresSafeArea()
-    }
-
-    private func pool(_ c: Color, size: CGFloat, x: CGFloat, y: CGFloat) -> some View {
-        Circle()
-            .fill(c.opacity(scheme == .dark ? 0.22 : 0.16))
-            .frame(width: size, height: size)
-            .blur(radius: size * 0.28)
-            .position(x: x, y: y)
+        .allowsHitTesting(false)
     }
 }
 
