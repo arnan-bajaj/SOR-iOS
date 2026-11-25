@@ -286,8 +286,10 @@ struct Signup: Identifiable, Hashable {
     var kind: String // student | parent | mentor
     var femaleAdult: Bool
     var leader: Bool
+    var rosterId: String
     init(id: String, _ d: Doc) {
         self.id = id
+        rosterId = d.str("rosterId")
         meetingId = d.str("meetingId")
         uid = d.str("uid")
         name = d.str("name")
@@ -467,5 +469,22 @@ struct HelperLog: Identifiable, Hashable {
         name = d.str("name"); said = d.str("said"); reply = d.str("reply"); role = d.str("role"); day = d.str("day"); error = d.str("error")
         at = d.num("at"); status = Int(d.num("status"))
         calls = d.docs("calls").map { $0.str("name").replacingOccurrences(of: "_", with: " ") }
+    }
+}
+
+/// Someone on the team's roster (roster/{id}): students, parents and mentors, with or without a board account.
+struct RosterPerson: Identifiable, Hashable {
+    let id: String
+    var name: String
+    var kind: String // student | parent | mentor
+    var uid: String
+    var aliases: [String]
+    var active: Bool
+    var female: Bool
+    init(id: String, _ d: Doc) {
+        self.id = id
+        name = d.str("name"); kind = d.str("kind"); uid = d.str("uid"); aliases = d.strs("aliases")
+        active = (d["active"] as? Bool) ?? true
+        female = d.bool("female")
     }
 }

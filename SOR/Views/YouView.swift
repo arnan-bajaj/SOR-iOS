@@ -33,6 +33,8 @@ struct YouView: View {
                 }
 
                 Section {
+                    Button { model.showHelper = true } label: { RowLabel(title: "Ask the helper", systemImage: "sparkles", color: Brand.violet) }
+                        .foregroundStyle(.primary)
                     NavigationLink(value: YouPage.notifications) { RowLabel(title: "Notifications", systemImage: "bell.badge.fill", color: .red) }
                 }
 

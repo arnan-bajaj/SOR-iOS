@@ -42,6 +42,7 @@ final class AppModel {
     /// Your users/{uid} document as stored (push settings live in it).
     var profileDoc: Doc = [:]
     var openLink: AppLink?
+    var showHelper = false
     var pushAllowed = true
     @ObservationIgnored var pushToken: String?
     @ObservationIgnored var pendingPushToken: String?
@@ -67,6 +68,8 @@ final class AppModel {
     var boardGoogleDocs: [GoogleDoc] = []
     var teamMarks: [Mark] = []
     var isHelperReviewer = false
+    var roster: [RosterPerson] = []
+    var femaleByUid: [String: Bool] = [:]
 
     /// Must match OWNER_EMAILS in index.html and isAutoAdmin() in firestore.rules.
     static let ownerEmails = ["rishik.kasula42@gmail.com"]

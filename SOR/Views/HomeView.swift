@@ -49,6 +49,7 @@ struct HomeView: View {
                     .lineLimit(2).minimumScaleFactor(0.8)
             }
             Spacer()
+            HelperButton()
             Button { tab = .you } label: {
                 Avatar(name: model.profile?.name ?? "", photoURL: model.authPhoto, size: 44)
                     .overlay(Circle().stroke(.white.opacity(0.25), lineWidth: 1.5))

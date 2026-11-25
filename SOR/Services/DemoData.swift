@@ -65,13 +65,17 @@ extension AppModel {
             ActionItem(id: "a2", ["text": "Order the spare swerve modules", "ownerUids": ["u-jordan", "demo-you"], "dueDate": day(7), "track": "build", "assignedOn": day(-1), "seasonId": Season.home]),
         ]
         privateActionItems = [ActionItem(id: "p1", ["text": "Draft next year's budget", "ownerUids": ["demo-you"], "dueDate": day(12), "track": "board", "assignedOn": day(-2), "seasonId": Season.home], confidential: true)]
+        roster = [("r1", "Alex Rivera", "student", "demo-you"), ("r2", "Sam Okafor", "student", "u-sam"), ("r3", "Casey Brooks", "student", ""),
+                  ("r4", "Dana Brooks", "parent", ""), ("r5", "Morgan Lee", "mentor", "")].map {
+            RosterPerson(id: $0.0, ["name": $0.1, "kind": $0.2, "uid": $0.3, "female": $0.0 == "r4"])
+        }
         let names = [("demo-you", "Alex Rivera"), ("u-sam", "Sam Okafor"), ("u-maya", "Maya Chen"), ("u-jordan", "Jordan Patel"), ("u-leo", "Leo Martins")]
         teamMarks = (0..<8).flatMap { w in names.enumerated().compactMap { i, n -> Mark? in
             let st = (w + i) % 5 == 0 ? "partial" : (w * i) % 7 == 3 ? "unexcused" : "present"
             return Mark(id: "mk\(w)\(i)", ["meetingId": "demo-\(w)", "date": day(-7 * (8 - w)), "title": "Hangar Build Session", "uid": n.0, "name": n.1, "kind": "student", "status": st])
         } }
         events = TeamCalendar.events(fromICS: Self.demoICS())
-        loaded = ["users", "subteams", "columns", "tasks", "settings", "calendar", "actionItems", "privateActionItems", "boardChannel", "teamAttendance", "signups", "attendance", "agendas"]
+        loaded = ["users", "subteams", "columns", "tasks", "settings", "calendar", "actionItems", "privateActionItems", "boardChannel", "teamAttendance", "signups", "attendance", "agendas", "roster"]
         phase = .ready
         updateWidget()
     }

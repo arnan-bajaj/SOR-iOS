@@ -392,6 +392,7 @@ struct MeetingDetailView: View {
     @Environment(\.openURL) private var openURL
     let event: CalEvent
     @State private var busy = false
+    @State private var addingPeople = false
 
     var body: some View {
         let sh = model.shift(event.id)
@@ -444,6 +445,7 @@ struct MeetingDetailView: View {
             .appBackground()
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
             .navigationDestination(for: WebLink.self) { WebPageView(title: $0.title, path: $0.path) }
+            .sheet(isPresented: $addingPeople) { if let sh { AddPeopleView(shift: sh) } }
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
@@ -495,8 +497,8 @@ struct MeetingDetailView: View {
         } else {
             Text("Not posted in Slack yet").foregroundStyle(.secondary)
         }
-        if model.isLead {
-            NavigationLink(value: WebLink(title: "Signups", path: "signups/\(event.id)")) { Label("Add someone", systemImage: "person.badge.plus") }
+        if model.isLead, let sh, !sh.cancelled {
+            Button { addingPeople = true } label: { Label("Add someone", systemImage: "person.badge.plus") }
         }
     }
 }

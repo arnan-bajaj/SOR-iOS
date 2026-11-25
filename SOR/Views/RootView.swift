@@ -68,6 +68,7 @@ struct MainTabs: View {
     @State private var lastTab: AppTab = .home
     @State private var creating = false
     @State private var debugWeb: WebLink?
+    @State private var helper = Helper()
     @State private var debugNative: String?
 
     var body: some View {
@@ -91,6 +92,7 @@ struct MainTabs: View {
         }
         .sheet(isPresented: $creating) { NewTaskView() }
         .sheet(item: Binding(get: { model.openLink }, set: { model.openLink = $0 })) { LinkSheet(link: $0) }
+        .sheet(isPresented: Binding(get: { model.showHelper }, set: { model.showHelper = $0 })) { HelperView(helper: helper) }
         #if DEBUG
         // Test hooks for the Simulator: -tab meetings, -openWeb analytics
         .onAppear {
@@ -108,6 +110,7 @@ struct MainTabs: View {
                 case "boardroom": BoardRoomView()
                 case "analytics": AnalyticsView()
                 case "actions": ActionItemsView()
+                case "helper": HelperView(helper: Helper())
                 default: TeamView()
                 }
             }
