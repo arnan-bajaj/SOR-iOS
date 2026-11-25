@@ -40,47 +40,53 @@ func phone(_ ctx: CGContext, _ img: NSImage, center: CGPoint, height: CGFloat, a
     ctx.restoreGState()
 }
 
-func text(_ s: String, size: CGFloat, weight: NSFont.Weight, color: NSColor, at p: CGPoint, width: CGFloat) {
+func attributed(_ s: String, size: CGFloat, weight: NSFont.Weight, color: NSColor) -> NSAttributedString {
     let para = NSMutableParagraphStyle(); para.lineBreakMode = .byWordWrapping
     let font = NSFont.systemFont(ofSize: size, weight: weight)
     let rounded = font.fontDescriptor.withDesign(.rounded).flatMap { NSFont(descriptor: $0, size: size) } ?? font
-    NSAttributedString(string: s, attributes: [.font: rounded, .foregroundColor: color, .paragraphStyle: para])
-        .draw(with: CGRect(x: p.x, y: p.y, width: width, height: size * 3), options: [.usesLineFragmentOrigin])
+    return NSAttributedString(string: s, attributes: [.font: rounded, .foregroundColor: color, .paragraphStyle: para])
 }
 
-func brand(_ ctx: CGContext, x: CGFloat, top: CGFloat, scale: CGFloat, width: CGFloat) {
-    let s = 220 * scale
+/// Draws a text block whose top edge sits at `top` (y grows upward) and returns its bottom edge.
+func text(_ s: String, size: CGFloat, weight: NSFont.Weight, color: NSColor, x: CGFloat, top: CGFloat, width: CGFloat) -> CGFloat {
+    let a = attributed(s, size: size, weight: weight, color: color)
+    let h = ceil(a.boundingRect(with: CGSize(width: width, height: 10_000), options: [.usesLineFragmentOrigin]).height)
+    a.draw(with: CGRect(x: x, y: top - h, width: width, height: h), options: [.usesLineFragmentOrigin])
+    return top - h
+}
+
+/// Logo, name and one line about the app, as a block whose top is `top`. Returns the block's height.
+@discardableResult
+func brand(_ ctx: CGContext, x: CGFloat, top: CGFloat, logo size: CGFloat, title: CGFloat, sub: CGFloat, width: CGFloat) -> CGFloat {
     ctx.saveGState()
-    ctx.addEllipse(in: CGRect(x: x, y: top - s, width: s, height: s)); ctx.clip()
-    logo.draw(in: CGRect(x: x, y: top - s, width: s, height: s))
+    ctx.addEllipse(in: CGRect(x: x, y: top - size, width: size, height: size)); ctx.clip()
+    logo.draw(in: CGRect(x: x, y: top - size, width: size, height: size))
     ctx.restoreGState()
-    // text() draws from the top of a box 3 lines tall, so place each box's top just under what's above it
-    let titleTop = top - s - 60 * scale
-    text("SOR Team Board", size: 150 * scale, weight: .heavy, color: .white, at: CGPoint(x: x, y: titleTop - 450 * scale), width: width)
-    let subTop = titleTop - 200 * scale
-    text("Tasks, meetings and check-ins for FRC Team 6059 System Overload.", size: 64 * scale, weight: .medium,
-         color: NSColor(white: 1, alpha: 0.72), at: CGPoint(x: x, y: subTop - 192 * scale), width: width)
+    let t = text("SOR Team Board", size: title, weight: .heavy, color: .white, x: x, top: top - size - title * 0.35, width: width)
+    let b = text("Tasks, meetings and check-ins for FRC Team 6059 System Overload.", size: sub, weight: .medium,
+                 color: NSColor(white: 1, alpha: 0.75), x: x, top: t - sub * 0.45, width: width)
+    return top - b
 }
 
 func save(_ rep: NSBitmapImageRep, _ name: String) {
     try! rep.representation(using: .png, properties: [:])!.write(to: URL(fileURLWithPath: "\(dir)/\(name)"))
 }
 
-// Header: 21:9, words on the left, three phones on the right
+// Header: 21:9. The App Store crops it to about 3:2 on iPhone (centered) and puts the back and share buttons over the
+// top, so the words and the main phone sit in the middle 60% and below the top fifth; the outer edges are only background.
 save(canvas(3840, 1646) { ctx in
     background(ctx, 3840, 1646)
-    brand(ctx, x: 220, top: 1646 - 260, scale: 1, width: 1500)
-    phone(ctx, shots[1], center: CGPoint(x: 2350, y: 760), height: 1500, angle: -4)
-    phone(ctx, shots[2], center: CGPoint(x: 3420, y: 760), height: 1500, angle: 4)
-    phone(ctx, shots[0], center: CGPoint(x: 2890, y: 800), height: 1640, angle: 0)
+    phone(ctx, shots[1], center: CGPoint(x: 3130, y: 700), height: 1380, angle: 5)
+    phone(ctx, shots[0], center: CGPoint(x: 2470, y: 760), height: 1560, angle: 0)
+    brand(ctx, x: 760, top: 1646 - 420, logo: 190, title: 140, sub: 64, width: 1180)
 }, "header.png")
 
-// Search results: 3:2, words on top, three phones below
+// Search results: 3:2. The search card shows it wider than 3:2, keeping the top part, so the words and the phones'
+// screens sit in the top half; the phones run off the bottom edge on purpose.
 save(canvas(3840, 2560) { ctx in
     background(ctx, 3840, 2560)
-    brand(ctx, x: 260, top: 2560 - 170, scale: 0.85, width: 3300)
-    phone(ctx, shots[3], center: CGPoint(x: 900, y: 760), height: 1450, angle: -3)
-    phone(ctx, shots[4], center: CGPoint(x: 2940, y: 760), height: 1450, angle: 3)
-    phone(ctx, shots[0], center: CGPoint(x: 1920, y: 800), height: 1580, angle: 0)
+    phone(ctx, shots[3], center: CGPoint(x: 3360, y: 1180), height: 2250, angle: 4)
+    phone(ctx, shots[0], center: CGPoint(x: 2560, y: 1250), height: 2400, angle: 0)
+    brand(ctx, x: 260, top: 2560 - 250, logo: 260, title: 190, sub: 92, width: 1650)
 }, "search-results.png")
 print("done")

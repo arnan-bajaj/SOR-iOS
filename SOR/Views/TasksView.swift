@@ -85,7 +85,11 @@ struct BoardView: View {
 
     private var isMine: Bool { boardId == "mine" }
     private var board: Subteam? { model.subteam(boardId) }
-    private var cols: [BoardColumn] { model.columns(for: isMine ? "all" : boardId) }
+    /// My Work shows the shared columns, plus a board-only one (Business's Grants) only when one of my tasks sits in it: boardColumns in mod-board.
+    private var cols: [BoardColumn] {
+        guard isMine else { return model.columns(for: boardId) }
+        return model.columns(for: "all").filter { c in c.subteamIds.isEmpty || !tasks(in: c.id).isEmpty }
+    }
 
     private func tasks(in col: String) -> [TaskItem] {
         model.tasks
