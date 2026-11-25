@@ -70,9 +70,6 @@ final class AppModel {
     var isHelperReviewer = false
     var roster: [RosterPerson] = []
     var teamReminders: [TeamReminder] = []
-    var grants: [Grant] = []
-    var grantAnswers: [GrantAnswer] = []
-    var grantInfo: [GrantInfo] = []
     /// Subteam documents as stored (for fields the app rarely needs, like slackChannel)
     var subteamDocs: [String: Doc] = [:]
     @ObservationIgnored var photoCache: [String: UIImage] = [:]
@@ -115,8 +112,6 @@ final class AppModel {
     var isBoardMember: Bool { demo ? isAdmin : holds("Board", "boardEmails") }
     var isLeadMentor: Bool { demo ? false : holds("Lead mentors", "leadMentorEmails") }
     var canSeeBoardRoom: Bool { isBoardMember || isLeadMentor }
-    /// canGrants: admins and the Business team.
-    var canGrants: Bool { isAdmin || (canEdit && (profile?.subteamIds ?? []).contains("biz")) }
     var isParent: Bool { profile?.memberType == "parent" }
 
     // MARK: - Lookups

@@ -111,7 +111,7 @@ struct MainTabs: View {
                 case "analytics": AnalyticsView()
                 case "actions": ActionItemsView()
                 case "helper": HelperView(helper: Helper())
-                case "biz": BoardView(boardId: "biz").navigationDestination(for: Grant.self) { GrantDetailView(grantId: $0.id) }
+                case "biz": BoardView(boardId: "biz")
                 default: TeamView()
                 }
             }

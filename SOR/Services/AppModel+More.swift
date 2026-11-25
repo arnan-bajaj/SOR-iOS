@@ -2,7 +2,7 @@ import Foundation
 import FirebaseFirestore
 import UIKit
 
-/// Team reminders (Action Items › Reminders), promoting action items to tasks, task photos and the grant tracker.
+/// Team reminders (Action Items › Reminders), promoting action items to tasks, and task photos.
 extension AppModel {
     // MARK: Team reminders
 
@@ -90,63 +90,5 @@ extension AppModel {
         batch.deleteDocument(db.document("photos/\(pid)"))
         batch.updateData(["photos": cur.photos.filter { $0.id != pid }.map { ["id": $0.id, "by": $0.by, "exp": $0.exp] as Doc }], forDocument: db.document("tasks/\(t.id)"))
         do { try await batch.commit() } catch { toast = Self.friendly(error) }
-    }
-
-    // MARK: Grants (Business only: canGrants)
-
-    func wantGrants() {
-        guard canGrants, !demo, phase == .ready else { return }
-        if lazyRegs["grants"] == nil {
-            lazyRegs["grants"] = db.collection("grants").addSnapshotListener { [weak self] snap, _ in
-                MainActor.assumeIsolated {
-                    self?.grants = (snap?.documents ?? []).map { Grant(id: $0.documentID, $0.data()) }
-                    self?.loaded.insert("grants")
-                }
-            }
-        }
-    }
-
-    func wantGrantLibrary() {
-        guard canGrants, !demo, phase == .ready else { return }
-        if lazyRegs["grantAnswers"] == nil {
-            lazyRegs["grantAnswers"] = db.collection("grantAnswers").addSnapshotListener { [weak self] snap, _ in
-                MainActor.assumeIsolated { self?.grantAnswers = (snap?.documents ?? []).map { GrantAnswer(id: $0.documentID, $0.data()) }; self?.loaded.insert("grantAnswers") }
-            }
-        }
-        if lazyRegs["grantInfo"] == nil {
-            lazyRegs["grantInfo"] = db.collection("grantInfo").addSnapshotListener { [weak self] snap, _ in
-                MainActor.assumeIsolated { self?.grantInfo = (snap?.documents ?? []).map { GrantInfo(id: $0.documentID, $0.data()) }.sorted { $0.position < $1.position }; self?.loaded.insert("grantInfo") }
-            }
-        }
-    }
-
-    func updateGrant(_ g: Grant, _ p: Doc) {
-        var patch = p
-        patch["updatedAt"] = nowMs
-        patch["updatedBy"] = uid
-        if demo {
-            if let i = grants.firstIndex(where: { $0.id == g.id }) {
-                var d: Doc = g.raw
-                d["status"] = g.status
-                d.merge(patch) { _, n in n }
-                grants[i] = Grant(id: g.id, d)
-            }
-            return
-        }
-        db.document("grants/\(g.id)").updateData(patch) { [weak self] err in
-            MainActor.assumeIsolated { if let err { self?.toast = Self.friendly(err) } }
-        }
-    }
-
-    @discardableResult
-    func addGrant(name: String, amount: String, deadline: String, status: String) async throws -> String {
-        let data: Doc = [
-            "name": name.trimmingCharacters(in: .whitespaces), "amount": amount, "deadline": deadline, "status": status,
-            "draftDue": "", "openingDate": "", "writer": "", "writerUid": "", "secondaryWriter": "", "secondaryUid": "",
-            "reviewer": "", "reviewerUid": "", "foundBy": profile?.name ?? "", "foundByUid": uid,
-            "notes": "", "docUrl": "", "linkUrl": "", "season": "2026-2027", "createdBy": uid, "createdAt": nowMs,
-        ]
-        if demo { let id = UUID().uuidString; grants.append(Grant(id: id, data)); return id }
-        return try await db.collection("grants").addDocument(data: data).documentID
     }
 }

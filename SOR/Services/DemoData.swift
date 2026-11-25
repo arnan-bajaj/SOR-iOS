@@ -22,11 +22,6 @@ extension AppModel {
         subteams = teams.enumerated().map { i, t in Subteam(id: t.0, ["name": t.1, "color": t.2, "position": Double(i)]) }
         columns = [("todo", "To Do", 0.0), ("doing", "In Progress", 1.0), ("done", "Done", 2.0)].map { BoardColumn(id: $0.0, ["name": $0.1, "position": $0.2]) }
             + [BoardColumn(id: "grants", ["name": "Grants", "position": -1.0, "subteamIds": ["biz"]])]
-        grants = [
-            Grant(id: "gr1", ["name": "Example Robotics Foundation", "amount": "$5,000", "deadline": Day.iso(Date().addingTimeInterval(5 * 86400)), "status": "in-progress", "writer": "Maya Chen", "writerUid": "u-maya"]),
-            Grant(id: "gr2", ["name": "Springfield Community Fund", "amount": "up to $2,500", "deadline": "rolling", "status": "not-started"]),
-            Grant(id: "gr3", ["name": "Valley Tech Sponsorship", "amount": "$1,000", "wonAmount": "$1,000", "status": "won"]),
-        ]
         teamReminders = [TeamReminder(id: "n1", ["text": "Bring the budget draft to the Board meeting", "track": "board", "date": Day.iso(Date().addingTimeInterval(2 * 86400)), "time": "16:00",
                                                  "sendAt": (Date().addingTimeInterval(2 * 86400).timeIntervalSince1970 * 1000), "createdBy": "demo-you"])]
 
@@ -83,7 +78,7 @@ extension AppModel {
             return Mark(id: "mk\(w)\(i)", ["meetingId": "demo-\(w)", "date": day(-7 * (8 - w)), "title": "Hangar Build Session", "uid": n.0, "name": n.1, "kind": "student", "status": st])
         } }
         events = TeamCalendar.events(fromICS: Self.demoICS())
-        loaded = ["users", "subteams", "columns", "tasks", "settings", "calendar", "actionItems", "privateActionItems", "boardChannel", "teamAttendance", "signups", "attendance", "agendas", "roster", "grants", "teamReminders", "grantAnswers", "grantInfo"]
+        loaded = ["users", "subteams", "columns", "tasks", "settings", "calendar", "actionItems", "privateActionItems", "boardChannel", "teamAttendance", "signups", "attendance", "agendas", "roster", "teamReminders"]
         phase = .ready
         updateWidget()
     }

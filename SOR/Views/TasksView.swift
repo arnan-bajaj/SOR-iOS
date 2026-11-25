@@ -46,8 +46,6 @@ struct TasksView: View {
             .navigationDestination(for: String.self) { BoardView(boardId: $0) }
             .navigationDestination(for: TaskItem.self) { TaskDetailView(taskId: $0.id) }
             .navigationDestination(for: WebLink.self) { WebPageView(title: $0.title, path: $0.path) }
-            .navigationDestination(for: Grant.self) { GrantDetailView(grantId: $0.id) }
-            .navigationDestination(for: GrantPage.self) { $0 == .library ? AnyView(GrantLibraryView()) : AnyView(GrantInfoView()) }
             .navigationDestination(for: TasksPage.self) { page in
                 switch page {
                 case .actions: ActionItemsView()
@@ -87,13 +85,7 @@ struct BoardView: View {
 
     private var isMine: Bool { boardId == "mine" }
     private var board: Subteam? { model.subteam(boardId) }
-    /// The Grants column is the Business team's grant tracker (only for people who can see grants), not a task column.
-    private var cols: [BoardColumn] {
-        model.columns(for: isMine ? "all" : boardId).filter { $0.id != "grants" || (boardId == "biz" && model.canGrants) }
-    }
-    private func count(_ c: BoardColumn) -> Int {
-        c.id == "grants" ? model.grants.filter { $0.working || $0.status == "not-open" }.count : tasks(in: c.id).count
-    }
+    private var cols: [BoardColumn] { model.columns(for: isMine ? "all" : boardId) }
 
     private func tasks(in col: String) -> [TaskItem] {
         model.tasks
@@ -108,7 +100,7 @@ struct BoardView: View {
             columnTabs
             TabView(selection: $columnId) {
                 ForEach(cols) { c in
-                    Group { if c.id == "grants" { GrantsColumn() } else { columnList(c) } }.tag(c.id)
+                    columnList(c).tag(c.id)
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
@@ -131,8 +123,10 @@ struct BoardView: View {
             }
         }
         .sheet(isPresented: $creating) { NewTaskView(subteamId: boardId, columnId: columnId) }
+        // Always on a column that exists, from the first frame and if columns change while it's open
+        .onChange(of: cols.map(\.id)) { _, ids in if !ids.contains(columnId) { columnId = ids.contains("todo") ? "todo" : ids.first ?? "" } }
         .onAppear {
-            if columnId.isEmpty { columnId = cols.first { $0.id == "todo" }?.id ?? cols.first?.id ?? "" }
+            if !cols.contains(where: { $0.id == columnId }) { columnId = cols.first { $0.id == "todo" }?.id ?? cols.first?.id ?? "" }
             #if DEBUG
             let args = ProcessInfo.processInfo.arguments
             if let i = args.firstIndex(of: "-column"), i + 1 < args.count { columnId = args[i + 1] }
@@ -150,7 +144,7 @@ struct BoardView: View {
                     } label: {
                         HStack(spacing: 6) {
                             Text(c.name)
-                            Text("\(count(c))").foregroundStyle(on ? .white.opacity(0.8) : .secondary).monospacedDigit()
+                            Text("\(tasks(in: c.id).count)").foregroundStyle(on ? .white.opacity(0.8) : .secondary).monospacedDigit()
                         }
                         .font(.subheadline.weight(.semibold))
                         .padding(.horizontal, 14).padding(.vertical, 8)
