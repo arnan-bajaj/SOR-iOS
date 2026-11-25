@@ -1,0 +1,7 @@
+// Settings that differ per team account. Fill these in once (see README.md, "One-time setup").
+
+// From GoogleService-Info.plist: the REVERSED_CLIENT_ID value. Google sign-in comes back to the app through it.
+GOOGLE_REVERSED_CLIENT_ID = com.googleusercontent.apps.14469766944-q6o4phn4d9om9rk81uoi3tg6bg785tar
+
+// The Apple Developer team that signs the app (10 characters, from developer.apple.com › Membership).
+DEVELOPMENT_TEAM = HCA64TLL48
