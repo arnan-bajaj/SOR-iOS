@@ -25,5 +25,7 @@
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.widgetkit-extension</string>
 	</dict>
+	<key>SORKeychainGroup</key>
+	<string>$(AppIdentifierPrefix)org.systemoverload.team.shared</string>
 </dict>
 </plist>

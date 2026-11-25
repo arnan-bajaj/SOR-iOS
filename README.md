@@ -38,7 +38,7 @@ open SOR.xcodeproj
 - Push: the app saves each phone's FCM token to `pushTokens/{token}` (rules: you write your own, nobody reads). The Slack bot sends them (`slack-bot/lib/push.mjs` on the `slack-bot-server` branch). What people turned off: `users/{uid}.push.<kind>`; kinds match `PushKind`. Apple needs the team's APNs key uploaded in Firebase › Project settings › Cloud Messaging.
 - Universal links: `applinks:team.systemoverload.org`; the site server serves `/.well-known/apple-app-site-association` (task, action, signups, checkin, agendas).
 - QR check-in: VisionKit scanner → the same `checkins` + `attendance` batch as the website (`checkIn(code:)`).
-- Widget: the app writes `WidgetSnapshot` to the app group `group.org.systemoverload.team`; the widget only reads it.
+- Widget: the app writes `WidgetSnapshot` to a shared keychain group (`<team>.org.systemoverload.team.shared`); the widget only reads it. Not an App Group: on the Individual account those can only be registered by the account holder.
 
 ## Before the App Store
 

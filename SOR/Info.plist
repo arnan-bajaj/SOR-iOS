@@ -41,6 +41,8 @@
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Scan the check-in code on the meeting-room Monitor.</string>
+	<key>SORKeychainGroup</key>
+	<string>$(AppIdentifierPrefix)org.systemoverload.team.shared</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

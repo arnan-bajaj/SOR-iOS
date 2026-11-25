@@ -53,6 +53,7 @@ targets:
         LSApplicationQueriesSchemes: [slack, zoomus, googlegmail]
         NSCameraUsageDescription: Scan the check-in code on the meeting-room Monitor.
         UIBackgroundModes: [remote-notification]
+        SORKeychainGroup: $(AppIdentifierPrefix)org.systemoverload.team.shared
     dependencies:
       - package: Firebase
         product: FirebaseAuth
@@ -86,5 +87,6 @@ targets:
         CFBundleDisplayName: SOR Team
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        SORKeychainGroup: $(AppIdentifierPrefix)org.systemoverload.team.shared
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
