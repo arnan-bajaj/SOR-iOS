@@ -11,7 +11,7 @@ struct OnboardingView: View {
 
     var body: some View {
         ZStack {
-            Color.page.ignoresSafeArea()
+            AppBackground()
             VStack(alignment: .leading, spacing: 18) {
                 ProgressView(value: Double(step + 1), total: 3).tint(.accentColor).padding(.top, 12)
                 Spacer()
@@ -52,7 +52,7 @@ struct OnboardingView: View {
                             if saving && step == 2 { ProgressView() } else { Image(systemName: "chevron.right").foregroundStyle(.tertiary) }
                         }
                         .padding(18)
-                        .background(Color.card, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .glass(18)
                     }
                     .buttonStyle(.plain)
                     .disabled(saving)
@@ -80,7 +80,7 @@ struct PendingView: View {
     @Environment(AppModel.self) private var model
     var body: some View {
         ZStack {
-            Color.page.ignoresSafeArea()
+            AppBackground()
             VStack(spacing: 16) {
                 Avatar(name: model.profile?.name ?? "", photoURL: model.authPhoto, size: 96)
                 Text("Almost in, \(model.profile?.firstName ?? "")").font(.title.weight(.bold))

@@ -133,6 +133,8 @@ struct TaskItem: Identifiable, Hashable {
     var assigneeUids: [String]
     var backupUids: [String]
     var dueDate: String // "YYYY-MM-DD" or ""
+    var newDueDate: String // a second deadline, when the first slipped
+    var childIds: [String] // a goal's parts
     var startDate: String
     var priority: Priority
     var checklist: [ChecklistItem]
@@ -156,6 +158,8 @@ struct TaskItem: Identifiable, Hashable {
         assigneeUids = d.strs("assigneeUids")
         backupUids = d.strs("backupUids")
         dueDate = d.str("dueDate")
+        newDueDate = d.str("newDueDate")
+        childIds = d.strs("childIds")
         startDate = d.str("startDate")
         priority = Priority(rawValue: d.str("priority")) ?? .med
         checklist = d.docs("checklist").map { ChecklistItem(text: $0.str("text"), done: $0.bool("done")) }
@@ -172,6 +176,8 @@ struct TaskItem: Identifiable, Hashable {
     }
 
     var due: Date? { Day.date(dueDate) }
+    /// The deadline that counts now: the second one if there is one.
+    var effectiveDue: String { newDueDate.isEmpty ? dueDate : newDueDate }
 }
 
 struct Comment: Identifiable, Hashable {
@@ -300,8 +306,13 @@ struct Mark: Identifiable, Hashable {
     var title: String
     var online: Bool
     var status: String
+    var uid: String
+    var rosterId: String
+    var name: String
+    var kind: String
     init(id: String, _ d: Doc) {
         self.id = id
+        uid = d.str("uid"); rosterId = d.str("rosterId"); name = d.str("name"); kind = d.str("kind")
         meetingId = d.str("meetingId")
         date = d.str("date")
         title = d.str("title")
@@ -393,4 +404,68 @@ struct ActionItem: Identifiable, Hashable {
     var path: String { "\(confidential ? "privateActionItems" : "actionItems")/\(id)" }
     /// assignedDay in mod-views: assignedOn, else the day it was added.
     var day: String { assignedOn.isEmpty ? Day.iso(Date(timeIntervalSince1970: createdAt / 1000)) : assignedOn }
+}
+
+// MARK: - Board Room and agenda documents
+
+struct ChannelMessage: Identifiable, Hashable {
+    let id: String
+    var text: String
+    var authorId: String
+    var authorName: String
+    var createdAt: Double
+    var kind: String // "" or "season" (the line a season switch leaves)
+    init(id: String, _ d: Doc) {
+        self.id = id
+        text = d.str("text"); authorId = d.str("authorId"); authorName = d.str("authorName"); createdAt = d.num("createdAt"); kind = d.str("kind")
+    }
+}
+
+/// A Board, Build Committee or Operations agenda written on the website (boardAgendas / meetingAgendas).
+struct AgendaDoc: Identifiable, Hashable {
+    struct Item: Hashable { var topic, points, who, urgency: String; var minutes: Int }
+    let id: String
+    var track: String
+    var date: String
+    var startTime: String
+    var recording: String
+    var attended: [String]
+    var purpose, takeaways, topics, nextSteps: String
+    var items: [Item]
+    init(id: String, _ d: Doc) {
+        self.id = id
+        track = d.str("track"); date = d.str("date"); startTime = d.str("startTime"); recording = d.str("recording")
+        attended = d.strs("attended")
+        purpose = d.str("purpose"); takeaways = d.str("takeaways"); topics = d.str("topics"); nextSteps = d.str("nextSteps")
+        items = d.docs("items").map { Item(topic: $0.str("topic"), points: $0.str("points"), who: $0.str("who"), urgency: $0.str("urgency"), minutes: Int($0.num("minutes"))) }
+    }
+    var totalMinutes: Int { items.map(\.minutes).reduce(0, +) }
+}
+
+/// A Google Doc agenda made by /agenda in Slack (meetingDocs / boardMeetingDocs).
+struct GoogleDoc: Identifiable, Hashable {
+    let id: String
+    var track: String
+    var url: String
+    var title: String
+    var date: String
+    init(id: String, _ d: Doc) {
+        self.id = id
+        track = d.str("track"); url = d.str("url"); title = d.str("title"); date = d.str("date")
+    }
+}
+
+/// One message to the helper (assistantLogs), for its reviewers.
+struct HelperLog: Identifiable, Hashable {
+    let id: String
+    var name, said, reply, role, day, error: String
+    var at: Double
+    var status: Int
+    var calls: [String]
+    init(id: String, _ d: Doc) {
+        self.id = id
+        name = d.str("name"); said = d.str("said"); reply = d.str("reply"); role = d.str("role"); day = d.str("day"); error = d.str("error")
+        at = d.num("at"); status = Int(d.num("status"))
+        calls = d.docs("calls").map { $0.str("name").replacingOccurrences(of: "_", with: " ") }
+    }
 }

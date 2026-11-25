@@ -15,12 +15,12 @@ struct TasksView: View {
                         BoardRow(name: "My Work", color: .accentColor, systemImage: "person.fill", count: model.myOpenTasks.count)
                     }
                 }
-                .listRowBackground(Color.card)
+                .listRowBackground(Color.row)
                 Section {
                     NavigationLink(value: TasksPage.actions) {
                         BoardRow(name: "Action Items", color: .cyan, systemImage: "checklist", count: model.myOpenActionItems.count)
                     }
-                    NavigationLink(value: WebLink(title: "Timeline", path: "timeline")) {
+                    NavigationLink(value: TasksPage.timeline) {
                         BoardRow(name: "Timeline", color: .indigo, systemImage: "calendar.day.timeline.left", count: 0)
                     }
                     if model.canGrants {
@@ -29,24 +29,24 @@ struct TasksView: View {
                         }
                     }
                 }
-                .listRowBackground(Color.card)
+                .listRowBackground(Color.row)
                 Section("Boards") {
                     ForEach(model.boards) { s in
                         NavigationLink(value: s.id) {
-                            BoardRow(name: s.name, color: s.color, count: model.tasks.filter { $0.subteamId == s.id && !model.isDone($0) }.count)
+                            BoardRow(name: s.name, color: s.color, systemImage: boardSymbol(s.id), count: model.tasks.filter { $0.subteamId == s.id && !model.isDone($0) }.count)
                         }
                     }
                 }
-                .listRowBackground(Color.card)
+                .listRowBackground(Color.row)
                 Section {
                     NavigationLink(value: TasksPage.archive) {
                         BoardRow(name: "Archive", color: .gray, systemImage: "archivebox", count: 0)
                     }
                 }
-                .listRowBackground(Color.card)
+                .listRowBackground(Color.row)
             }
             .scrollContentBackground(.hidden)
-            .background(Color.page)
+            .appBackground()
             .navigationTitle("Tasks")
             .navigationDestination(for: String.self) { BoardView(boardId: $0) }
             .navigationDestination(for: TaskItem.self) { TaskDetailView(taskId: $0.id) }
@@ -55,13 +55,14 @@ struct TasksView: View {
                 switch page {
                 case .actions: ActionItemsView()
                 case .archive: ArchiveView()
+                case .timeline: SeasonTimelineView()
                 }
             }
         }
     }
 }
 
-enum TasksPage: Hashable { case actions, archive }
+enum TasksPage: Hashable { case actions, archive, timeline }
 
 struct BoardRow: View {
     let name: String
@@ -70,11 +71,8 @@ struct BoardRow: View {
     let count: Int
     var body: some View {
         HStack(spacing: 12) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 8, style: .continuous).fill(color.opacity(0.18)).frame(width: 32, height: 32)
-                if let systemImage { Image(systemName: systemImage).foregroundStyle(color).font(.system(size: 14, weight: .semibold)) } else { SubteamDot(color: color, size: 11) }
-            }
-            Text(name).font(.body.weight(.medium))
+            IconTile(systemImage: systemImage ?? "square.grid.2x2.fill", color: color, size: 34)
+            Text(name).font(.body.weight(.semibold))
             Spacer()
             if count > 0 { Text("\(count)").foregroundStyle(.secondary).monospacedDigit() }
         }
@@ -112,7 +110,7 @@ struct BoardView: View {
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
         }
-        .background(Color.page)
+        .appBackground()
         .navigationTitle(isMine ? "My Work" : board?.name ?? "Board")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -192,6 +190,22 @@ struct BoardView: View {
     }
 }
 
+/// A symbol for each subteam's board.
+func boardSymbol(_ id: String) -> String {
+    switch id {
+    case "prog": "chevron.left.forwardslash.chevron.right"
+    case "elec": "bolt.fill"
+    case "vision": "eye.fill"
+    case "cad": "cube.fill"
+    case "mech": "wrench.and.screwdriver.fill"
+    case "biz": "briefcase.fill"
+    case "media": "megaphone.fill"
+    case "strat": "chart.xyaxis.line"
+    case "drive": "steeringwheel"
+    default: "square.grid.2x2.fill"
+    }
+}
+
 /// Column headings take the status colour (the website's hover.dev-style boards).
 func statusColor(_ columnId: String) -> Color {
     switch columnId {
@@ -211,30 +225,48 @@ struct TaskRow: View {
 
     var body: some View {
         let done = model.isDone(task)
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top, spacing: 8) {
-                if task.isGoal { Image(systemName: "flag.fill").foregroundStyle(.red).font(.caption) }
-                Text(task.title).font(.body.weight(.medium)).strikethrough(done, color: .secondary)
-                    .foregroundStyle(done ? .secondary : .primary).multilineTextAlignment(.leading)
-                Spacer(minLength: 8)
-                if !task.assigneeUids.isEmpty { AvatarStack(ids: task.assigneeUids) }
+        let tint = model.subteam(task.subteamId)?.color ?? Brand.blue
+        HStack(alignment: .top, spacing: 12) {
+            // Tick it off right here (it moves to Done, like dragging on the board)
+            Button {
+                guard model.canEdit else { return }
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                    model.move(task, to: done ? (model.columns(for: task.subteamId).first { $0.id == "todo" }?.id ?? "todo") : model.doneColumnId)
+                }
+            } label: {
+                Image(systemName: done ? "checkmark.circle.fill" : task.isGoal ? "flag.circle" : "circle")
+                    .font(.system(size: 24, weight: .regular))
+                    .foregroundStyle(done ? .green : tint)
+                    .symbolEffect(.bounce, value: done)
             }
-            HStack(spacing: 6) {
-                if showBoard, let s = model.subteam(task.subteamId) {
-                    HStack(spacing: 5) { SubteamDot(color: s.color, size: 7); Text(s.name) }.font(.caption).foregroundStyle(.secondary)
+            .buttonStyle(.plain)
+            .disabled(!model.canEdit)
+            .accessibilityLabel(done ? "Mark not done" : "Mark done")
+
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .top, spacing: 8) {
+                    Text(task.title).font(.body.weight(.semibold)).strikethrough(done, color: .secondary)
+                        .foregroundStyle(done ? .secondary : .primary).multilineTextAlignment(.leading)
+                    Spacer(minLength: 8)
+                    if !task.assigneeUids.isEmpty { AvatarStack(ids: task.assigneeUids) }
                 }
-                if task.priority == .high || task.priority == .critical { Pill(text: task.priority.label, tint: task.priority.tint) }
-                DuePill(iso: task.dueDate, done: done)
-                if !task.checklist.isEmpty {
-                    Pill(text: "\(task.checklist.filter(\.done).count)/\(task.checklist.count)", systemImage: "checklist")
+                FlowLayout(spacing: 6, lineSpacing: 6) {
+                    if showBoard, let s = model.subteam(task.subteamId) {
+                        HStack(spacing: 5) { SubteamDot(color: s.color, size: 7); Text(s.name) }.font(.caption.weight(.medium)).foregroundStyle(.secondary)
+                    }
+                    if task.priority == .high || task.priority == .critical { Pill(text: task.priority.label, systemImage: "exclamationmark", tint: task.priority.tint) }
+                    DuePill(iso: task.dueDate, done: done)
+                    if !task.checklist.isEmpty {
+                        Pill(text: "\(task.checklist.filter(\.done).count)/\(task.checklist.count)", systemImage: "checklist")
+                    }
+                    if task.commentCount > 0 { Pill(text: "\(task.commentCount)", systemImage: "bubble.left.fill") }
                 }
-                if task.commentCount > 0 { Pill(text: "\(task.commentCount)", systemImage: "bubble.left") }
             }
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(.primary.opacity(0.07), lineWidth: 1))
+        .glass(18, tint: done ? nil : tint)
         .contentShape(Rectangle())
     }
 }

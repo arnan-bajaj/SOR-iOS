@@ -5,7 +5,10 @@ import SwiftUI
 struct ActionItemsView: View {
     @Environment(AppModel.self) private var model
     var boardRoom = false
+    /// Inside the Board Room, which has its own title and background
+    var embedded = false
     var startTrack: Track = .board
+    @State private var showAgendas = false
     @State private var track: Track = .board
     @State private var started = false
     @State private var adding = false
@@ -14,18 +17,37 @@ struct ActionItemsView: View {
     private var list: [ActionItem] { boardRoom ? model.boardRoomItems : model.items(track: track) }
 
     var body: some View {
+        let page = VStack(spacing: 0) {
+            if !boardRoom {
+                VStack(spacing: 8) {
+                    Picker("Meeting", selection: $track) { ForEach(Track.allCases) { Text($0.label).tag($0) } }.pickerStyle(.segmented)
+                    Picker("Show", selection: $showAgendas) { Text("To-dos").tag(false); Text("Agendas").tag(true) }.pickerStyle(.segmented)
+                }
+                .padding(.horizontal, 16).padding(.bottom, 6)
+            }
+            if showAgendas && !boardRoom { AgendaDocsList(track: track) } else { itemList }
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu { Toggle("Show done", isOn: $showDone) } label: { Image(systemName: "line.3.horizontal.decrease.circle") }
+            }
+            if boardRoom ? model.isBoardMember : model.canEdit {
+                ToolbarItem(placement: .topBarTrailing) { Button { adding = true } label: { Image(systemName: "plus") } }
+            }
+        }
+        .sheet(isPresented: $adding) { NewActionItemView(track: boardRoom ? .board : track, confidential: boardRoom) }
+        .onAppear { if !started { started = true; track = startTrack } }
+        if embedded { page } else {
+            page.appBackground(Brand.teal)
+                .navigationTitle(boardRoom ? "Board Room" : "Action Items")
+                .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+
+    private var itemList: some View {
         let items = list.filter { showDone || !$0.done }
         let groups = Dictionary(grouping: items, by: \.day)
-        List {
-            if !boardRoom {
-                Picker("Meeting", selection: $track) { ForEach(Track.allCases) { Text($0.label).tag($0) } }
-                    .pickerStyle(.segmented)
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets())
-            } else {
-                Text("Confidential: only the Board and lead mentors can see this.").font(.footnote).foregroundStyle(.secondary)
-                    .listRowBackground(Color.clear)
-            }
+        return List {
             if !model.loaded.contains(boardRoom ? "privateActionItems" : "actionItems") && !model.demo {
                 SkeletonRows(count: 4).listRowBackground(Color.clear)
             } else if items.isEmpty {
@@ -40,30 +62,10 @@ struct ActionItemsView: View {
                             }
                     }
                 }
-                .listRowBackground(Color.card)
+                .listRowBackground(Color.row)
             }
-            Section {
-                NavigationLink(value: WebLink(title: boardRoom ? "Board Room" : "Action Items",
-                                              path: boardRoom ? "boardroom" : "actions/\(track.rawValue)")) {
-                    Label(boardRoom ? "Board channel and agendas" : "Agenda documents and reminders", systemImage: "doc.text")
-                }
-            }
-            .listRowBackground(Color.card)
         }
         .scrollContentBackground(.hidden)
-        .background(Color.page)
-        .navigationTitle(boardRoom ? "Board Room" : "Action Items")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Menu { Toggle("Show done", isOn: $showDone) } label: { Image(systemName: "line.3.horizontal.decrease.circle") }
-            }
-            if boardRoom ? model.isBoardMember : model.canEdit {
-                ToolbarItem(placement: .topBarTrailing) { Button { adding = true } label: { Image(systemName: "plus") } }
-            }
-        }
-        .sheet(isPresented: $adding) { NewActionItemView(track: boardRoom ? .board : track, confidential: boardRoom) }
-        .onAppear { if !started { started = true; track = startTrack } }
     }
 
     private func heading(_ day: String) -> String {
@@ -134,7 +136,7 @@ struct NewActionItemView: View {
                 .listRowBackground(Color.clear)
             }
             .scrollContentBackground(.hidden)
-            .background(Color.sheet)
+            .appBackground()
             .navigationTitle(confidential ? "Confidential action item" : "New action item")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -185,10 +187,10 @@ struct ArchiveView: View {
                     }
                 }
             }
-            .listRowBackground(Color.card)
+            .listRowBackground(Color.row)
         }
         .scrollContentBackground(.hidden)
-        .background(Color.page)
+        .appBackground()
         .navigationTitle("Archive")
         .navigationBarTitleDisplayMode(.inline)
     }

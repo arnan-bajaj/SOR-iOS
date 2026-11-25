@@ -25,9 +25,10 @@ struct MeetingsView: View {
                 case .agendas: AgendasPage()
                 }
             }
-            .background(Color.page)
+            .appBackground()
             .navigationTitle("Meetings")
             .navigationDestination(for: Agenda.self) { AgendaDetailView(agenda: $0) }
+            .navigationDestination(for: YouPage.self) { _ in AnalyticsView() }
             .navigationDestination(for: WebLink.self) { WebPageView(title: $0.title, path: $0.path) }
             .navigationDestination(for: TaskItem.self) { TaskDetailView(taskId: $0.id) }
             .sheet(item: $open) { MeetingDetailView(event: $0) }
@@ -201,7 +202,7 @@ struct SignupRow: View {
             }
         }
         .padding(12)
-        .background(Color.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .glass(16)
         .contentShape(Rectangle())
     }
 }
@@ -240,7 +241,7 @@ struct AttendancePage: View {
                         NavigationLink(value: WebLink(title: "Take Attendance", path: "attendance")) {
                             Label("Take attendance, students grid and roster", systemImage: "checklist")
                         }
-                        NavigationLink(value: WebLink(title: "Analytics", path: "analytics")) {
+                        NavigationLink(value: YouPage.analytics) {
                             Label("Analytics", systemImage: "chart.bar.xaxis")
                         }
                     }
@@ -259,7 +260,7 @@ struct AttendancePage: View {
                         if let st { Pill(text: st.label, tint: st.tint) }
                     }
                     .padding(12)
-                    .background(Color.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .glass(16)
                 }
             }
             .padding(.horizontal, 16).padding(.bottom, 24)
@@ -296,7 +297,7 @@ struct AgendasPage: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(12)
-                        .background(Color.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .glass(16)
                     }
                     .buttonStyle(.plain)
                 }
@@ -346,7 +347,7 @@ struct AgendaDetailView: View {
             }
         }
         .scrollContentBackground(.hidden)
-        .background(Color.page)
+        .appBackground()
         .navigationBarTitleDisplayMode(.inline)
     }
 }
@@ -380,7 +381,7 @@ struct MeetingRow: View {
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .glass(16)
         .contentShape(Rectangle())
     }
 }
@@ -440,11 +441,11 @@ struct MeetingDetailView: View {
                 }
             }
             .scrollContentBackground(.hidden)
-            .background(Color.sheet)
+            .appBackground()
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
             .navigationDestination(for: WebLink.self) { WebPageView(title: $0.title, path: $0.path) }
         }
-        .presentationDetents([.medium, .large])
+        .presentationDetents([.large])
         .presentationDragIndicator(.visible)
     }
 

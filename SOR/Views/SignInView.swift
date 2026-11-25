@@ -7,7 +7,7 @@ struct SignInView: View {
 
     var body: some View {
         ZStack {
-            Color.page.ignoresSafeArea()
+            AppBackground()
             VStack(spacing: 0) {
                 Spacer()
                 Image("Logo").resizable().scaledToFit().frame(width: 150, height: 150).clipShape(Circle())

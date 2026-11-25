@@ -95,7 +95,7 @@ struct Card<Content: View>: View {
         VStack(alignment: .leading, spacing: 12) { content }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(16)
-            .background(Color.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .glass(22)
     }
 }
 

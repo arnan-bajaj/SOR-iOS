@@ -58,6 +58,15 @@ final class AppModel {
     @ObservationIgnored private var arrivalsDay = ""
     @ObservationIgnored private var boardRoomReg: ListenerRegistration?
     @ObservationIgnored private var agendasReg: ListenerRegistration?
+    /// Listeners started the first time a page needs them (Board Room, agenda documents, the team's attendance).
+    @ObservationIgnored var lazyRegs: [String: ListenerRegistration] = [:]
+    var boardChannel: [ChannelMessage] = []
+    var agendaDocs: [AgendaDoc] = []
+    var boardAgendaDocs: [AgendaDoc] = []
+    var googleDocs: [GoogleDoc] = []
+    var boardGoogleDocs: [GoogleDoc] = []
+    var teamMarks: [Mark] = []
+    var isHelperReviewer = false
 
     /// Must match OWNER_EMAILS in index.html and isAutoAdmin() in firestore.rules.
     static let ownerEmails = ["rishik.kasula42@gmail.com"]
@@ -334,6 +343,7 @@ final class AppModel {
             self.watchBoardRoom()
         }
         watchArrivals()
+        Task { await checkHelperReviewer() }
     }
 
     /// Today's "I'm here" check-ins. Re-pointed at the new day when the app comes back after midnight.
@@ -382,6 +392,8 @@ final class AppModel {
 
     private func stopTeam() {
         boardRoomReg = nil; agendasReg = nil
+        lazyRegs.values.forEach { $0.remove() }
+        lazyRegs = [:]
         teamRegs.forEach { $0.remove() }
         teamRegs = []
         arrivalsDay = ""

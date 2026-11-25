@@ -7,7 +7,7 @@ extension AppModel {
         uid = "demo-you"
         authName = "Alex Rivera"
         authEmail = "alex@example.com"
-        profile = Person(id: uid, ["name": "Alex Rivera", "email": "alex@example.com", "role": "lead", "memberType": "lead", "subteamIds": ["prog"], "onboardedAt": 1])
+        profile = Person(id: uid, ["name": "Alex Rivera", "email": "alex@example.com", "role": "admin", "memberType": "board", "subteamIds": ["prog"], "onboardedAt": 1])
 
         let people: [(String, String, String)] = [
             ("demo-you", "Alex Rivera", "lead"), ("u-sam", "Sam Okafor", "member"), ("u-maya", "Maya Chen", "member"),
@@ -42,13 +42,36 @@ extension AppModel {
                 "createdBy": "demo-you", "createdAt": 0, "commentCount": i == 0 ? 1 : 0,
             ]
         }
+        // A team goal made of three of those tasks, and a subteam priority
+        docs["g1"] = ["title": "Drivetrain ready for week 0", "subteamId": "goals", "columnId": "doing", "isGoal": true, "childIds": ["t0", "t3", "t8"],
+                      "dueDate": day(10), "priority": "high", "position": 0.0, "createdBy": "demo-you", "createdAt": 0]
+        docs["g2"] = ["title": "Sponsor packet sent", "subteamId": "biz", "columnId": "todo", "isGoal": true, "childIds": ["t6"],
+                      "dueDate": day(16), "priority": "med", "position": 1.0, "createdBy": "demo-you", "createdAt": 0]
         demoDocs = docs
         demoComments["t0"] = [Comment(id: "c1", ["authorId": "u-sam", "body": "Drive kP feels high on carpet. Let's try 0.04 after school.", "createdAt": Double(nowMs - 3_600_000)])]
         allTasks = docs.map { TaskItem(id: $0.key, $0.value) }
 
-        settings = ["calendar": ["ics": Self.demoICS()]]
+        settings = ["calendar": ["ics": Self.demoICS()], "leadership": ["boardEmails": ["alex@example.com"]]]
+        let now = Double(nowMs)
+        boardChannel = [
+            ChannelMessage(id: "m1", ["text": "Kickoff venue: the library said yes for the 9th.", "authorId": "u-priya", "authorName": "Priya Nair", "createdAt": now - 86_400_000]),
+            ChannelMessage(id: "m2", ["text": "Great. I'll put it on the calendar tonight.", "authorId": "demo-you", "authorName": "Alex Rivera", "createdAt": now - 80_000_000]),
+        ]
+        boardAgendaDocs = [AgendaDoc(id: "bd1", ["track": "board", "date": day(3), "startTime": "17:30", "items": [
+            ["topic": "Action items check-in", "points": "Review open items\nMeeting recap", "who": "All", "minutes": 20, "urgency": "high"],
+            ["topic": "Kickoff plans", "points": "Venue, food, schedule", "who": "Board", "minutes": 15, "urgency": "medium"]] as [Doc]])]
+        actionItems = [
+            ActionItem(id: "a1", ["text": "Confirm the kickoff venue", "ownerUids": ["demo-you"], "dueDate": day(4), "track": "board", "assignedOn": day(-2), "seasonId": Season.home]),
+            ActionItem(id: "a2", ["text": "Order the spare swerve modules", "ownerUids": ["u-jordan", "demo-you"], "dueDate": day(7), "track": "build", "assignedOn": day(-1), "seasonId": Season.home]),
+        ]
+        privateActionItems = [ActionItem(id: "p1", ["text": "Draft next year's budget", "ownerUids": ["demo-you"], "dueDate": day(12), "track": "board", "assignedOn": day(-2), "seasonId": Season.home], confidential: true)]
+        let names = [("demo-you", "Alex Rivera"), ("u-sam", "Sam Okafor"), ("u-maya", "Maya Chen"), ("u-jordan", "Jordan Patel"), ("u-leo", "Leo Martins")]
+        teamMarks = (0..<8).flatMap { w in names.enumerated().compactMap { i, n -> Mark? in
+            let st = (w + i) % 5 == 0 ? "partial" : (w * i) % 7 == 3 ? "unexcused" : "present"
+            return Mark(id: "mk\(w)\(i)", ["meetingId": "demo-\(w)", "date": day(-7 * (8 - w)), "title": "Hangar Build Session", "uid": n.0, "name": n.1, "kind": "student", "status": st])
+        } }
         events = TeamCalendar.events(fromICS: Self.demoICS())
-        loaded = ["users", "subteams", "columns", "tasks", "settings", "calendar"]
+        loaded = ["users", "subteams", "columns", "tasks", "settings", "calendar", "actionItems", "privateActionItems", "boardChannel", "teamAttendance", "signups", "attendance", "agendas"]
         phase = .ready
         updateWidget()
     }

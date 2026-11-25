@@ -14,7 +14,7 @@ struct WebPageView: View {
 
     var body: some View {
         ZStack {
-            Color.page.ignoresSafeArea()
+            AppBackground()
             if ready {
                 WebView(url: AppModel.site.appending(path: path), token: token, loading: $loading)
                     .ignoresSafeArea(edges: .bottom)

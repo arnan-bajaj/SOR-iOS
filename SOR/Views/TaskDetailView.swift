@@ -133,7 +133,7 @@ struct TaskDetailView: View {
             }
         }
         .scrollContentBackground(.hidden)
-        .background(Color.page)
+        .appBackground()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if focus != nil {

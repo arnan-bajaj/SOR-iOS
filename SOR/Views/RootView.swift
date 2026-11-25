@@ -16,6 +16,7 @@ struct RootView: View {
             }
         }
         .modifier(ToastModifier())
+        .fontDesign(.rounded)
         .animation(.easeInOut(duration: 0.25), value: model.phase)
     }
 }
@@ -23,7 +24,7 @@ struct RootView: View {
 struct LaunchView: View {
     var body: some View {
         ZStack {
-            Color.page.ignoresSafeArea()
+            AppBackground()
             VStack(spacing: 18) {
                 Image("Logo").resizable().scaledToFit().frame(width: 120, height: 120).clipShape(Circle())
                 ProgressView()
@@ -43,7 +44,7 @@ struct FailedView: View {
         } actions: {
             Button("Sign out") { model.signOut() }.buttonStyle(.bordered)
         }
-        .background(Color.page)
+        .appBackground()
     }
 }
 
@@ -54,7 +55,7 @@ struct NotConfiguredView: View {
         } description: {
             Text("This build has no GoogleService-Info.plist. Add it to the SOR folder in Xcode (see README, “One-time setup”), then build again.")
         }
-        .background(Color.page)
+        .appBackground()
     }
 }
 
@@ -67,6 +68,7 @@ struct MainTabs: View {
     @State private var lastTab: AppTab = .home
     @State private var creating = false
     @State private var debugWeb: WebLink?
+    @State private var debugNative: String?
 
     var body: some View {
         TabView(selection: $tab) {
@@ -96,8 +98,20 @@ struct MainTabs: View {
             func arg(_ k: String) -> String? { args.firstIndex(of: k).flatMap { $0 + 1 < args.count ? args[$0 + 1] : nil } }
             if let t = arg("-tab") { tab = ["tasks": .tasks, "meetings": .meetings, "you": .you][t] ?? .home }
             if let w = arg("-openWeb") { debugWeb = WebLink(title: w, path: w) }
+            if let n = arg("-openNative") { debugNative = n }
         }
         .sheet(item: $debugWeb) { link in NavigationStack { WebPageView(title: link.title, path: link.path) } }
+        .fullScreenCover(item: Binding(get: { debugNative.map { WebLink(title: $0, path: $0) } }, set: { debugNative = $0?.path })) { l in
+            NavigationStack {
+                switch l.path {
+                case "timeline": SeasonTimelineView()
+                case "boardroom": BoardRoomView()
+                case "analytics": AnalyticsView()
+                case "actions": ActionItemsView()
+                default: TeamView()
+                }
+            }
+        }
         #endif
     }
 }

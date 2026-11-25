@@ -33,7 +33,7 @@ struct YouView: View {
                 }
 
                 Section {
-                    NavigationLink(value: YouPage.notifications) { Label("Notifications", systemImage: "bell.badge.fill") }
+                    NavigationLink(value: YouPage.notifications) { RowLabel(title: "Notifications", systemImage: "bell.badge.fill", color: .red) }
                 }
 
                 Section("Appearance") {
@@ -48,7 +48,7 @@ struct YouView: View {
                 Section("Team") {
                     NavigationLink(value: YouPage.team) {
                         HStack {
-                            Label("Team", systemImage: "person.3.fill")
+                            RowLabel(title: "Team", systemImage: "person.3.fill", color: Brand.blue)
                             if model.isAdmin && !model.pendingPeople.isEmpty {
                                 Spacer()
                                 Text("\(model.pendingPeople.count) waiting").font(.caption.weight(.semibold)).foregroundStyle(.white)
@@ -57,14 +57,20 @@ struct YouView: View {
                         }
                     }
                     if model.canSeeBoardRoom {
-                        NavigationLink(value: YouPage.boardRoom) { Label("Board Room", systemImage: "lock.fill") }
+                        NavigationLink(value: YouPage.boardRoom) { RowLabel(title: "Board Room", systemImage: "lock.fill", color: Brand.red) }
                     }
-                    NavigationLink(value: WebLink(title: "Analytics", path: "analytics")) { Label("Analytics", systemImage: "chart.bar.xaxis") }
-                    NavigationLink(value: WebLink(title: "You", path: "you")) { Label("Signup records, helper chats and more", systemImage: "ellipsis.circle") }
+                    NavigationLink(value: YouPage.analytics) { RowLabel(title: "Analytics", systemImage: "chart.bar.xaxis", color: Brand.teal) }
+                    NavigationLink(value: YouPage.archive) { RowLabel(title: "Archive", systemImage: "archivebox.fill", color: .gray) }
+                    if model.isHelperReviewer {
+                        NavigationLink(value: YouPage.helperChats) { RowLabel(title: "Helper chats", systemImage: "sparkles", color: Brand.violet) }
+                    }
+                    if model.isLead {
+                        NavigationLink(value: YouPage.signupRecords) { RowLabel(title: "Signup records", systemImage: "doc.text.fill", color: Brand.amber) }
+                    }
                 }
 
                 Section("About") {
-                    Button { web = AppModel.site.appending(path: "privacy") } label: { Label("Privacy Policy", systemImage: "hand.raised") }
+                    Button { web = AppModel.site.appending(path: "privacy") } label: { RowLabel(title: "Privacy Policy", systemImage: "hand.raised.fill", color: Brand.blue) }
                     LabeledContent("Version", value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")
                 }
 
@@ -79,13 +85,17 @@ struct YouView: View {
                 }
             }
             .scrollContentBackground(.hidden)
-            .background(Color.page)
+            .appBackground()
             .navigationTitle("You")
             .navigationDestination(for: WebLink.self) { WebPageView(title: $0.title, path: $0.path) }
             .navigationDestination(for: YouPage.self) { page in
                 switch page {
                 case .team: TeamView()
-                case .boardRoom: ActionItemsView(boardRoom: true)
+                case .boardRoom: BoardRoomView()
+                case .analytics: AnalyticsView()
+                case .archive: ArchiveView()
+                case .helperChats: HelperChatsView()
+                case .signupRecords: SignupRecordsView()
                 case .notifications: NotificationSettingsView()
                 }
             }
@@ -109,7 +119,7 @@ struct YouView: View {
     }
 }
 
-enum YouPage: Hashable { case team, boardRoom, notifications }
+enum YouPage: Hashable { case team, boardRoom, notifications, analytics, archive, helperChats, signupRecords }
 
 struct NotificationSettingsView: View {
     @Environment(AppModel.self) private var model
@@ -121,7 +131,7 @@ struct NotificationSettingsView: View {
                     Text("Notifications are off for this app.")
                     Button("Turn them on in Settings") { openURL(URL(string: UIApplication.openSettingsURLString)!) }
                 }
-                .listRowBackground(Color.card)
+                .listRowBackground(Color.row)
             }
             Section {
                 ForEach(PushKind.allCases.filter { $0 != .team || model.isAdmin || model.role == .pending }) { k in
@@ -135,10 +145,10 @@ struct NotificationSettingsView: View {
             } footer: {
                 Text("Nothing is sent between 9 pm and 8 am except quietly. Slack keeps sending what it sends now.")
             }
-            .listRowBackground(Color.card)
+            .listRowBackground(Color.row)
         }
         .scrollContentBackground(.hidden)
-        .background(Color.page)
+        .appBackground()
         .navigationTitle("Notifications")
         .navigationBarTitleDisplayMode(.inline)
     }

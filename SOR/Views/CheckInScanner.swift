@@ -32,7 +32,7 @@ struct CheckInSheet: View {
                         .multilineTextAlignment(.center)
                         .focused($typing)
                         .frame(height: 54)
-                        .background(Color.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .glass(16)
                         .onChange(of: code) { _, v in if v.filter(\.isNumber).count == 4 { submit(v) } }
                     if busy { ProgressView().padding(.leading, 8) }
                 }
@@ -40,7 +40,7 @@ struct CheckInSheet: View {
                 Spacer()
             }
             .padding(20)
-            .background(Color.sheet)
+            .appBackground()
             .navigationTitle("Check in")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Close") { dismiss() } } }

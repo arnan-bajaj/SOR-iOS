@@ -34,7 +34,7 @@ struct TeamView: View {
                         .padding(.vertical, 4)
                     }
                 }
-                .listRowBackground(Color.card)
+                .listRowBackground(Color.row)
             }
             Section("\(people.count) people") {
                 ForEach(people) { p in
@@ -62,15 +62,15 @@ struct TeamView: View {
                     }
                 }
             }
-            .listRowBackground(Color.card)
+            .listRowBackground(Color.row)
             Section {
                 NavigationLink(value: WebLink(title: "Team", path: "team")) { Label("Leadership, subteams and seasons", systemImage: "person.3") }
             }
-            .listRowBackground(Color.card)
+            .listRowBackground(Color.row)
         }
         .searchable(text: $query)
         .scrollContentBackground(.hidden)
-        .background(Color.page)
+        .appBackground()
         .navigationTitle("Team")
     }
 }

@@ -47,7 +47,7 @@ struct NewTaskView: View {
                 .listRowBackground(Color.clear)
             }
             .scrollContentBackground(.hidden)
-            .background(Color.sheet)
+            .appBackground()
             .navigationTitle("New task")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
