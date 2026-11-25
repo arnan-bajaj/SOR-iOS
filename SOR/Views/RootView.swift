@@ -66,7 +66,8 @@ struct MainTabs: View {
     @Environment(AppModel.self) private var model
     @State private var tab: AppTab = .home
     @State private var lastTab: AppTab = .home
-    @State private var creating = false
+    /// Bumped after each new task, so the Create tab starts empty next time.
+    @State private var createRun = 0
     @State private var debugWeb: WebLink?
     @State private var helper = Helper()
     @State private var debugNative: String?
@@ -78,7 +79,8 @@ struct MainTabs: View {
             TasksView()
                 .tabItem { Label("Tasks", systemImage: "square.grid.3x2.fill") }.tag(AppTab.tasks)
             if model.canEdit {
-                Color.clear
+                NewTaskView(onDone: { tab = lastTab; createRun += 1 })
+                    .id(createRun)
                     .tabItem { Label("Create", systemImage: "plus.circle.fill") }.tag(AppTab.create)
             }
             MeetingsView()
@@ -86,11 +88,9 @@ struct MainTabs: View {
             YouView()
                 .tabItem { Label("You", systemImage: "person.crop.circle.fill") }.tag(AppTab.you)
         }
-        .onChange(of: tab) { old, new in
-            // Create is an action, not a page: open the new-task sheet and stay where you were.
-            if new == .create { tab = old; creating = true } else { lastTab = new }
-        }
-        .sheet(isPresented: $creating) { NewTaskView() }
+        // Create is a real tab (the new-task form), so the tab bar's glass lands on it instead of bouncing back
+        // when a sheet opens. Cancel or Add goes back to where you were.
+        .onChange(of: tab) { _, new in if new != .create { lastTab = new } }
         .sheet(item: Binding(get: { model.openLink }, set: { model.openLink = $0 })) { LinkSheet(link: $0) }
         .sheet(isPresented: Binding(get: { model.showHelper }, set: { model.showHelper = $0 })) { HelperView(helper: helper) }
         #if DEBUG
@@ -98,7 +98,7 @@ struct MainTabs: View {
         .onAppear {
             let args = ProcessInfo.processInfo.arguments
             func arg(_ k: String) -> String? { args.firstIndex(of: k).flatMap { $0 + 1 < args.count ? args[$0 + 1] : nil } }
-            if let t = arg("-tab") { tab = ["tasks": .tasks, "meetings": .meetings, "you": .you][t] ?? .home }
+            if let t = arg("-tab") { tab = ["tasks": .tasks, "create": .create, "meetings": .meetings, "you": .you][t] ?? .home }
             if let w = arg("-openWeb") { debugWeb = WebLink(title: w, path: w) }
             if let n = arg("-openNative") { debugNative = n }
             if args.contains("-openHelper") { model.showHelper = true }

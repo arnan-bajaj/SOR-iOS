@@ -5,6 +5,8 @@ struct NewTaskView: View {
     @Environment(\.dismiss) private var dismiss
     var subteamId: String?
     var columnId: String?
+    /// Set when the form is the Create tab rather than a sheet: Cancel and Add call it (back to the last tab) instead of dismissing.
+    var onDone: (() -> Void)?
 
     @State private var title = ""
     @State private var notes = ""
@@ -51,7 +53,7 @@ struct NewTaskView: View {
             .navigationTitle("New task")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { finish() } }
                 ToolbarItem(placement: .confirmationAction) {
                     if saving { ProgressView() } else {
                         Button("Add") { save() }.fontWeight(.semibold)
@@ -72,6 +74,10 @@ struct NewTaskView: View {
         .presentationDragIndicator(.visible)
     }
 
+    private func finish() {
+        if let onDone { onDone() } else { dismiss() }
+    }
+
     private func save() {
         saving = true
         let col = columnId.flatMap { id in model.columns(for: board).contains { $0.id == id } ? id : nil }
@@ -80,7 +86,8 @@ struct NewTaskView: View {
                 try await model.createTask(title: title, description: notes, subteamId: board, columnId: col, assignees: owners,
                                            dueDate: hasDue ? Day.iso(due) : "", priority: priority)
                 model.toast = "Task added"
-                dismiss()
+                saving = false
+                finish()
             } catch {
                 model.toast = AppModel.friendly(error)
                 saving = false

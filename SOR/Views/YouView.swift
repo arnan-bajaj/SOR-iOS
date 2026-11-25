@@ -2,7 +2,7 @@ import SwiftUI
 
 struct YouView: View {
     @Environment(AppModel.self) private var model
-    @AppStorage("appearance") private var appearance = "dark"
+    @AppStorage("appearance") private var appearance = "system"
     @State private var web: URL?
     @State private var confirmDelete = false
     @State private var deleting = false
@@ -40,9 +40,9 @@ struct YouView: View {
 
                 Section("Appearance") {
                     Picker("Theme", selection: $appearance) {
+                        Text("Match iPhone").tag("system")
                         Text("Dark").tag("dark")
                         Text("Light").tag("light")
-                        Text("Match iPhone").tag("system")
                     }
                     .pickerStyle(.segmented)
                 }
