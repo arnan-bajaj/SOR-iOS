@@ -209,6 +209,24 @@ final class AppModel {
         }
     }
 
+    /// Google is how the team signs in; email and password is the "Other sign-in" (accounts an admin makes in Firebase).
+    var signedInWithGoogle: Bool { Auth.auth().currentUser?.providerData.contains { $0.providerID == "google.com" } ?? false }
+
+    func signIn(email: String, password: String) async -> String? {
+        do {
+            try await Auth.auth().signIn(withEmail: email.trimmingCharacters(in: .whitespaces), password: password)
+            return nil
+        } catch let e as NSError {
+            switch AuthErrorCode(rawValue: e.code) {
+            case .wrongPassword, .invalidCredential, .userNotFound, .invalidEmail: return "That email and password don't match an account."
+            case .operationNotAllowed: return "Email sign-in isn't turned on for this team yet."
+            case .tooManyRequests: return "Too many tries. Wait a minute and try again."
+            case .networkError: return "No connection. Check your internet and try again."
+            default: return e.localizedDescription
+            }
+        }
+    }
+
     func signIn() async {
         guard FirebaseApp.app()?.options.clientID != nil else {
             toast = "Google sign-in isn't set up in this build yet (GoogleService-Info.plist has no client ID)."
@@ -228,7 +246,7 @@ final class AppModel {
     }
 
     func signOut() {
-        if demo { phase = .signedOut; return }
+        if demo { leaveDemo(); return }
         Task {
             await forgetPushToken() // while still signed in, so the rules allow it
             GIDSignIn.sharedInstance.signOut()
@@ -237,6 +255,8 @@ final class AppModel {
     }
 
     private func authChanged(_ user: User?) {
+        if demo && user == nil { return } // looking around the demo: nobody's signed in, and that's fine
+        if demo { leaveDemo() }
         stopAll()
         guard let user else {
             uid = ""; profile = nil
@@ -531,9 +551,14 @@ final class AppModel {
     /// an account needs a fresh sign-in. Team records (tasks you made, attendance, comments) stay with the team.
     func deleteAccount() async throws {
         guard let user = Auth.auth().currentUser, let presenter = UIApplication.shared.topViewController else { return }
-        let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: presenter, hint: authEmail, additionalScopes: nil)
-        guard let idToken = result.user.idToken?.tokenString else { throw AppError("Google didn't confirm the sign-in.") }
-        try await user.reauthenticate(with: GoogleAuthProvider.credential(withIDToken: idToken, accessToken: result.user.accessToken.tokenString))
+        if signedInWithGoogle {
+            let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: presenter, hint: authEmail, additionalScopes: nil)
+            guard let idToken = result.user.idToken?.tokenString else { throw AppError("Google didn't confirm the sign-in.") }
+            try await user.reauthenticate(with: GoogleAuthProvider.credential(withIDToken: idToken, accessToken: result.user.accessToken.tokenString))
+        } else if let at = user.metadata.lastSignInDate, Date().timeIntervalSince(at) > 300 {
+            // Firebase only deletes an email sign-in that's fresh
+            throw AppError("For your safety, sign out and sign back in, then delete your account.")
+        }
 
         let me = uid
         await forgetPushToken()

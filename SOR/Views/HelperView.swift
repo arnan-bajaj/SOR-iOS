@@ -6,6 +6,9 @@ struct HelperView: View {
     @Environment(\.dismiss) private var dismiss
     let helper: Helper
     @State private var text = ""
+    /// Apple asks apps to get permission before sending personal data to an outside AI: once per person, on this phone.
+    @State private var consented = false
+    private var consentKey: String { "sor-helper-consent:\(model.uid)" }
     @FocusState private var typing: Bool
 
     private var suggestions: [String] {
@@ -19,7 +22,7 @@ struct HelperView: View {
                 ScrollViewReader { proxy in
                     ScrollView {
                         LazyVStack(alignment: .leading, spacing: 12) {
-                            intro
+                            if consented { intro } else { consent }
                             ForEach(helper.items) { item in row(item).id(item.id) }
                             if helper.busy {
                                 HStack(spacing: 8) { ProgressView(); Text("Thinking…").foregroundStyle(.secondary) }.font(.subheadline).id("busy")
@@ -31,7 +34,7 @@ struct HelperView: View {
                     .onChange(of: helper.items.count) { _, _ in withAnimation { proxy.scrollTo(helper.busy ? AnyHashable("busy") : AnyHashable(helper.items.last?.id), anchor: .bottom) } }
                     .onChange(of: helper.busy) { _, b in if b { withAnimation { proxy.scrollTo("busy", anchor: .bottom) } } }
                 }
-                composer
+                if consented { composer }
             }
             .appBackground(Brand.violet)
             .navigationTitle("Helper")
@@ -48,6 +51,7 @@ struct HelperView: View {
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
         .onAppear {
+            consented = UserDefaults.standard.bool(forKey: consentKey)
             helper.model = model
             helper.restore()
             helper.onOpen = { path in
@@ -55,6 +59,36 @@ struct HelperView: View {
                 Task { try? await Task.sleep(for: .milliseconds(450)); model.open(path: path) }
             }
         }
+    }
+
+    /// Before the first message: what goes to Google, and a clear yes or no.
+    private var consent: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 10) {
+                IconTile(systemImage: "sparkles", color: Brand.violet, size: 38)
+                Text("Before you use the helper").font(.title3.weight(.bold))
+            }
+            Text("The helper is run by **Google Gemini**, a service outside the team. To answer you, the app sends Google:")
+            VStack(alignment: .leading, spacing: 6) {
+                Label("What you type to the helper", systemImage: "text.bubble")
+                Label("Your name and the team board's open tasks, people, upcoming meetings and action items", systemImage: "person.3")
+            }
+            .font(.subheadline)
+            Text("It never sends emails, attendance, private answers or anything confidential. Every chat is also saved by the team so misuse of its Gemini key can be stopped. See the Privacy Policy for more.")
+                .font(.subheadline).foregroundStyle(.secondary)
+            HStack {
+                Button("Not now") { model.showHelper = false }.buttonStyle(.bordered)
+                Spacer()
+                Button {
+                    UserDefaults.standard.set(true, forKey: consentKey)
+                    withAnimation { consented = true }
+                } label: { Text("Allow").fontWeight(.semibold).frame(minWidth: 80) }
+                .buttonStyle(.borderedProminent).tint(Brand.violet)
+            }
+            .padding(.top, 4)
+        }
+        .padding(16)
+        .glass(20, tint: Brand.violet)
     }
 
     private var intro: some View {
@@ -66,7 +100,7 @@ struct HelperView: View {
                     Text(model.canEdit ? "Or tell it what to change. Nothing changes until you tap Do it." : "Tasks, meetings, who's on what.").font(.caption).foregroundStyle(.secondary)
                 }
             }
-            Text("This runs on the team's own Gemini key, so we request that you do not misuse the feature. It can also get things wrong.")
+            Text("This runs on the team's own Gemini key, so we ask that you don't misuse it. Every chat is saved so misuse can be stopped. It can also get things wrong.")
                 .font(.caption).foregroundStyle(.secondary)
             if !helper.off.isEmpty { Label(helper.off, systemImage: "exclamationmark.circle").font(.caption).foregroundStyle(.orange) }
             if helper.items.isEmpty {

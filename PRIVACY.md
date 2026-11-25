@@ -1,6 +1,6 @@
 # SOR Team Board: Privacy Policy
 
-_The published text lives in the website (`PRIVACY` in index.html, served at https://team.systemoverload.org/privacy). Keep this copy in step. Last updated 2026-11-24._
+_The published text lives in the website (`PRIVACY` in index.html, served at https://team.systemoverload.org/privacy). Keep this copy in step. Last updated 2026-11-25._
 
 The SOR Team Board app and website (team.systemoverload.org) are run by FRC Team 6059 System Overload Robotics for its own students, mentors and parents. They're used to organize the team's tasks, meetings, signups and attendance. They have no ads and no tracking, and we never sell or share your information for marketing.
 
@@ -11,7 +11,7 @@ The SOR Team Board app and website (team.systemoverload.org) are run by FRC Team
 - **Your team work:** tasks, checklists and comments you write or are assigned, and photos you add to tasks (deleted after 14 days unless the team keeps them).
 - **Meetings:** your meeting signups, attendance marks, check-ins, and "I'm here" notices.
 - **Slack:** if you link your Slack account, its member ID, so the team's Slack bot can match your reactions and messages to your account.
-- **Helper chats (website only):** if you use the website's AI helper, your questions are sent to Google's Gemini service to answer them, and every chat is saved so the team can stop misuse of the team's account.
+- **The helper:** if you use the AI helper (on the website, or in the app after you allow it), your questions and the board details it needs are sent to Google's Gemini service, and every chat is saved so the team can stop misuse of the team's key.
 
 The app doesn't collect your location, contacts, health information or advertising identifiers.
 

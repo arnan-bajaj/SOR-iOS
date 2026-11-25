@@ -12,6 +12,7 @@ struct HomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     header
+                    if model.demo { demoBanner }
                     stats
                     if let m = model.meetingNow { hereCard(m) }
                     else if let sh = model.openShifts.first, let e = sh.event { hereCard(e) }
@@ -61,6 +62,22 @@ struct HomeView: View {
             .accessibilityLabel("You")
         }
         .padding(.top, 12)
+    }
+
+    // MARK: Demo
+
+    private var demoBanner: some View {
+        HStack(spacing: 12) {
+            IconTile(systemImage: "theatermasks.fill", color: Brand.amber, size: 34)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("This is a demo").font(.subheadline.weight(.semibold))
+                Text("Made-up people and tasks. Nothing you change is saved.").font(.caption).foregroundStyle(.secondary)
+            }
+            Spacer()
+            Button("Sign in") { model.leaveDemo() }.font(.subheadline.weight(.semibold)).buttonStyle(.bordered)
+        }
+        .padding(12)
+        .glass(18, tint: Brand.amber)
     }
 
     // MARK: Stats

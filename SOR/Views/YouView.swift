@@ -73,15 +73,18 @@ struct YouView: View {
 
                 Section("About") {
                     Button { web = AppModel.site.appending(path: "privacy") } label: { RowLabel(title: "Privacy Policy", systemImage: "hand.raised.fill", color: Brand.blue) }
+                    Button { web = AppModel.site.appending(path: "support") } label: { RowLabel(title: "Help and support", systemImage: "questionmark.circle.fill", color: Brand.teal) }
                     LabeledContent("Version", value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")
                 }
 
                 Section {
-                    Button("Sign out") { model.signOut() }
+                    Button(model.demo ? "Leave the demo" : "Sign out") { model.signOut() }
+                    if !model.demo {
                     Button(role: .destructive) { confirmDelete = true } label: {
                         HStack { Text("Delete my account"); if deleting { Spacer(); ProgressView() } }
                     }
                     .disabled(deleting)
+                    }
                 } footer: {
                     Text("Deleting removes your profile, your private answers and your sign-in. Tasks, comments and attendance you were part of stay with the team's records.")
                 }

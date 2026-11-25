@@ -1,7 +1,19 @@
 import Foundation
+import FirebaseCore
 
 /// Invented people and work for demo mode (launch argument `-demo`). Never real team members.
 extension AppModel {
+    /// Back to the sign-in screen from the demo, with nothing invented left behind.
+    func leaveDemo() {
+        demo = false
+        demoDocs = [:]; demoComments = [:]
+        profile = nil; uid = ""; authName = ""; authEmail = ""
+        users = []; subteams = []; columns = []; allTasks = []; settings = [:]; events = []; signups = []; myMarks = []
+        actionItems = []; privateActionItems = []; boardChannel = []; boardAgendaDocs = []; teamMarks = []; roster = []; teamReminders = []
+        arrivals = []; loaded = []
+        phase = FirebaseApp.app() == nil ? .notConfigured : .signedOut
+    }
+
     func startDemo() {
         demo = true
         uid = "demo-you"
