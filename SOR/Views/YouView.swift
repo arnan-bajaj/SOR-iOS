@@ -32,6 +32,10 @@ struct YouView: View {
                     }
                 }
 
+                Section {
+                    NavigationLink(value: YouPage.notifications) { Label("Notifications", systemImage: "bell.badge.fill") }
+                }
+
                 Section("Appearance") {
                     Picker("Theme", selection: $appearance) {
                         Text("Dark").tag("dark")
@@ -82,6 +86,7 @@ struct YouView: View {
                 switch page {
                 case .team: TeamView()
                 case .boardRoom: ActionItemsView(boardRoom: true)
+                case .notifications: NotificationSettingsView()
                 }
             }
             .sheet(item: $web) { SafariView(url: $0).ignoresSafeArea() }
@@ -104,4 +109,37 @@ struct YouView: View {
     }
 }
 
-enum YouPage: Hashable { case team, boardRoom }
+enum YouPage: Hashable { case team, boardRoom, notifications }
+
+struct NotificationSettingsView: View {
+    @Environment(AppModel.self) private var model
+    @Environment(\.openURL) private var openURL
+    var body: some View {
+        List {
+            if !model.pushAllowed {
+                Section {
+                    Text("Notifications are off for this app.")
+                    Button("Turn them on in Settings") { openURL(URL(string: UIApplication.openSettingsURLString)!) }
+                }
+                .listRowBackground(Color.card)
+            }
+            Section {
+                ForEach(PushKind.allCases.filter { $0 != .team || model.isAdmin || model.role == .pending }) { k in
+                    Toggle(isOn: Binding(get: { model.pushOn(k) }, set: { model.setPush(k, $0) })) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(k.label)
+                            Text(k.hint).font(.caption).foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            } footer: {
+                Text("Nothing is sent between 9 pm and 8 am except quietly. Slack keeps sending what it sends now.")
+            }
+            .listRowBackground(Color.card)
+        }
+        .scrollContentBackground(.hidden)
+        .background(Color.page)
+        .navigationTitle("Notifications")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}

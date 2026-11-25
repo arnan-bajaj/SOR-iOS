@@ -9,10 +9,12 @@
 /* Begin PBXBuildFile section */
 		026D3A4C14ADFCAE679EF77E /* WebPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59B9E31399055C050F8CC270 /* WebPageView.swift */; };
 		05965473CB5814985B9390CE /* TaskDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0390168978230B77939250E /* TaskDetailView.swift */; };
+		097A82ACAE2453DB4098BB30 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A624760D8654958DAA773437 /* Assets.xcassets */; };
 		177E210D2C8DFC54CBB7C397 /* DemoData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71A667531D9645724A36E12 /* DemoData.swift */; };
 		1F95F8098BF09C2D2A7AB147 /* NewTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89AF442AC264D07FA99412DC /* NewTaskView.swift */; };
 		1FDADAF5BE58A184E8848748 /* TeamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED401FA59FFDD31290E0804 /* TeamView.swift */; };
 		27C95FE7C4A4E11BF26A25D4 /* ActionItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E16E53EBD8B08404F9DCA07 /* ActionItemsView.swift */; };
+		299B92BE1B65684227885D49 /* SORWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC32F97B93940399D18FAEA /* SORWidget.swift */; };
 		396A2BB112FC6EA9102614E9 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C864230BA4A8020DA4339A52 /* RootView.swift */; };
 		479A3DC7E49C80F4B68D2372 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 4FE906D9E383E838926D6D14 /* GoogleSignIn */; };
 		61001370F0D2E05B4566CD8A /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86007E843D01A1D66C7B3686 /* Components.swift */; };
@@ -21,43 +23,82 @@
 		799CEBCC792BD2E88B734A9B /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = FD05A874EA4DF729C44E4CBC /* FirebaseAuth */; };
 		803082C9AEE898F09077D5B7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4DD7545097BAFE31C9AF2606 /* GoogleService-Info.plist */; };
 		8513B57940BA6117D496B716 /* TeamCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E6B84D4743FB36E8443244 /* TeamCalendar.swift */; };
+		8F226B28564352205728512E /* AppModel+Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D33E006F2D7B8167B66B367 /* AppModel+Device.swift */; };
 		9E9FB2B03FF0E15179E9D1BF /* MeetingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC039463374D60EF1EA6266 /* MeetingsView.swift */; };
 		A192AE1AC2954487BA1527A9 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81652A1D3A3920F7F7EE431A /* OnboardingView.swift */; };
+		B292D63612A6F3A881FCE559 /* CheckInScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7166BDDFD039155AC033E3ED /* CheckInScanner.swift */; };
+		B3061C27376BA67CEB41D006 /* SORWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9711E7AC61B2093EA06BF297 /* SORWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B669ED01C691E16E8B58529C /* TasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A206287E1527502DC8F9BEA /* TasksView.swift */; };
 		C207227361FABF7AAE5BD2A4 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = ECC3BFED2B2ED06E3D3945F6 /* FirebaseFirestore */; };
 		C43C1845F0603EFE77C92927 /* AppModel+Team.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6EAFA64C1D022C094B82A7 /* AppModel+Team.swift */; };
 		C52ADCCFC6FF10660F36B3BC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9476D744CD70A2535320E453 /* Assets.xcassets */; };
 		D4AF8FAEC76C225FCED31E25 /* YouView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 364F4225AE1CFE55D507FAB8 /* YouView.swift */; };
 		DB9EAD02C09D71469A27F364 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A7CF9CBE5CC88DFE733433 /* AppModel.swift */; };
+		DF1EB6455AB20F5DBE223210 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 0B2266AB25623D81EE8B017C /* FirebaseMessaging */; };
 		F2B69B2DCB1CE21DDDF340AC /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5CAD73AA76E68BCF445090 /* SignInView.swift */; };
+		F41EC7BA382AB7624C7A63B1 /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13173CAA112BAC20907E3929 /* WidgetSnapshot.swift */; };
 		F6A89DA578984E51C97E0582 /* SORApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4943BC5B52BFA838E9846818 /* SORApp.swift */; };
+		FF3FC0B9B47724359A8DEB6B /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13173CAA112BAC20907E3929 /* WidgetSnapshot.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		5DE2576019E20855F1570B63 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5039149814EA705DAA54F881 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A920EF8DBF4C65A2535493BC;
+			remoteInfo = SORWidget;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		438017F938260787F4E4BE27 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				B3061C27376BA67CEB41D006 /* SORWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0A206287E1527502DC8F9BEA /* TasksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksView.swift; sourceTree = "<group>"; };
 		0AC23F96D780147E49B6F190 /* SOR.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SOR.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		11A8F5673C1D2CFE0179E739 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		13173CAA112BAC20907E3929 /* WidgetSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshot.swift; sourceTree = "<group>"; };
 		2EC039463374D60EF1EA6266 /* MeetingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsView.swift; sourceTree = "<group>"; };
 		356467BE7E5167D71874CE77 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		364F4225AE1CFE55D507FAB8 /* YouView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouView.swift; sourceTree = "<group>"; };
 		4943BC5B52BFA838E9846818 /* SORApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SORApp.swift; sourceTree = "<group>"; };
 		4DD7545097BAFE31C9AF2606 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		4E67E1174DA28303B3365624 /* SORWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SORWidget.entitlements; sourceTree = "<group>"; };
 		59B9E31399055C050F8CC270 /* WebPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebPageView.swift; sourceTree = "<group>"; };
 		5E5CAD73AA76E68BCF445090 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
+		62C31046BCF4579C1D863971 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		7166BDDFD039155AC033E3ED /* CheckInScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInScanner.swift; sourceTree = "<group>"; };
 		81652A1D3A3920F7F7EE431A /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		86007E843D01A1D66C7B3686 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
 		89AF442AC264D07FA99412DC /* NewTaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTaskView.swift; sourceTree = "<group>"; };
+		8D33E006F2D7B8167B66B367 /* AppModel+Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppModel+Device.swift"; sourceTree = "<group>"; };
 		92F32931F7BE6F891F885578 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		9476D744CD70A2535320E453 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9711E7AC61B2093EA06BF297 /* SORWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = SORWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E16E53EBD8B08404F9DCA07 /* ActionItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionItemsView.swift; sourceTree = "<group>"; };
+		A624760D8654958DAA773437 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AFC32F97B93940399D18FAEA /* SORWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SORWidget.swift; sourceTree = "<group>"; };
 		B9E6B84D4743FB36E8443244 /* TeamCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamCalendar.swift; sourceTree = "<group>"; };
 		BB6EAFA64C1D022C094B82A7 /* AppModel+Team.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppModel+Team.swift"; sourceTree = "<group>"; };
 		C864230BA4A8020DA4339A52 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		D2A7CF9CBE5CC88DFE733433 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		E6C53FDEE0CB7B62A2FDACF3 /* SOR.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SOR.entitlements; sourceTree = "<group>"; };
 		EED401FA59FFDD31290E0804 /* TeamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamView.swift; sourceTree = "<group>"; };
 		F0390168978230B77939250E /* TaskDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetailView.swift; sourceTree = "<group>"; };
 		F71A667531D9645724A36E12 /* DemoData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoData.swift; sourceTree = "<group>"; };
-		"TEMP_57473DDE-4663-407C-ACE6-64186E4EB6F8" /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		"TEMP_4A023B27-62B8-405B-A742-285BE8C13902" /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +109,7 @@
 				799CEBCC792BD2E88B734A9B /* FirebaseAuth in Frameworks */,
 				C207227361FABF7AAE5BD2A4 /* FirebaseFirestore in Frameworks */,
 				479A3DC7E49C80F4B68D2372 /* GoogleSignIn in Frameworks */,
+				DF1EB6455AB20F5DBE223210 /* FirebaseMessaging in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -94,6 +136,7 @@
 			isa = PBXGroup;
 			children = (
 				9E16E53EBD8B08404F9DCA07 /* ActionItemsView.swift */,
+				7166BDDFD039155AC033E3ED /* CheckInScanner.swift */,
 				86007E843D01A1D66C7B3686 /* Components.swift */,
 				92F32931F7BE6F891F885578 /* HomeView.swift */,
 				2EC039463374D60EF1EA6266 /* MeetingsView.swift */,
@@ -114,6 +157,7 @@
 			isa = PBXGroup;
 			children = (
 				7BF057C414B40267AF578FD9 /* SOR */,
+				B1AA4986FF1B00FE537E3FD0 /* SORWidget */,
 				E759720D76D3329E1A5EAEDC /* Products */,
 			);
 			sourceTree = "<group>";
@@ -123,13 +167,23 @@
 			children = (
 				4DD7545097BAFE31C9AF2606 /* GoogleService-Info.plist */,
 				356467BE7E5167D71874CE77 /* Info.plist */,
+				E6C53FDEE0CB7B62A2FDACF3 /* SOR.entitlements */,
 				35EF4E7898513B9A3B6E1F5E /* App */,
 				95DD6AB887A0E53060CDF1C1 /* Model */,
 				2CB3FB2EBE0ACDE4BF7B9530 /* Resources */,
 				B01B69CFC3864A7821FB2974 /* Services */,
+				83CE0070C299200C5C11045A /* Shared */,
 				360982390DFF6A4E3FB856C1 /* Views */,
 			);
 			path = SOR;
+			sourceTree = "<group>";
+		};
+		83CE0070C299200C5C11045A /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				13173CAA112BAC20907E3929 /* WidgetSnapshot.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		95DD6AB887A0E53060CDF1C1 /* Model */ = {
@@ -145,24 +199,37 @@
 			isa = PBXGroup;
 			children = (
 				D2A7CF9CBE5CC88DFE733433 /* AppModel.swift */,
+				8D33E006F2D7B8167B66B367 /* AppModel+Device.swift */,
 				BB6EAFA64C1D022C094B82A7 /* AppModel+Team.swift */,
 				F71A667531D9645724A36E12 /* DemoData.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
 		};
+		B1AA4986FF1B00FE537E3FD0 /* SORWidget */ = {
+			isa = PBXGroup;
+			children = (
+				A624760D8654958DAA773437 /* Assets.xcassets */,
+				62C31046BCF4579C1D863971 /* Info.plist */,
+				4E67E1174DA28303B3365624 /* SORWidget.entitlements */,
+				AFC32F97B93940399D18FAEA /* SORWidget.swift */,
+			);
+			path = SORWidget;
+			sourceTree = "<group>";
+		};
 		E759720D76D3329E1A5EAEDC /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				0AC23F96D780147E49B6F190 /* SOR.app */,
+				9711E7AC61B2093EA06BF297 /* SORWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		"TEMP_16E680EC-EE48-47A2-8D79-44659344D7AF" /* SOR-iOS */ = {
+		"TEMP_8818867B-CAFF-4A73-A4C6-FD5554229565" /* SOR-iOS */ = {
 			isa = PBXGroup;
 			children = (
-				"TEMP_57473DDE-4663-407C-ACE6-64186E4EB6F8" /* Config.xcconfig */,
+				"TEMP_4A023B27-62B8-405B-A742-285BE8C13902" /* Config.xcconfig */,
 			);
 			path = "SOR-iOS";
 			sourceTree = "<group>";
@@ -170,6 +237,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		A920EF8DBF4C65A2535493BC /* SORWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4C9FC15CAD55EA148DE06C3B /* Build configuration list for PBXNativeTarget "SORWidget" */;
+			buildPhases = (
+				6612B6217267A883F05D4BD5 /* Sources */,
+				2A4EE9116B5E9FBD954641BC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SORWidget;
+			packageProductDependencies = (
+			);
+			productName = SORWidget;
+			productReference = 9711E7AC61B2093EA06BF297 /* SORWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		FEC078D3EC868B3375093B74 /* SOR */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4CBBDD360BB8F000CE566812 /* Build configuration list for PBXNativeTarget "SOR" */;
@@ -177,16 +262,19 @@
 				FE6EA716AF4CFF327EDD51EB /* Sources */,
 				247F815AF48ABF4AD8907E35 /* Resources */,
 				5CF16992B28B7FB8DB293D0D /* Frameworks */,
+				438017F938260787F4E4BE27 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				D1E3F338EC765844165093E4 /* PBXTargetDependency */,
 			);
 			name = SOR;
 			packageProductDependencies = (
 				FD05A874EA4DF729C44E4CBC /* FirebaseAuth */,
 				ECC3BFED2B2ED06E3D3945F6 /* FirebaseFirestore */,
 				4FE906D9E383E838926D6D14 /* GoogleSignIn */,
+				0B2266AB25623D81EE8B017C /* FirebaseMessaging */,
 			);
 			productName = SOR;
 			productReference = 0AC23F96D780147E49B6F190 /* SOR.app */;
@@ -201,7 +289,12 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
+					A920EF8DBF4C65A2535493BC = {
+						DevelopmentTeam = HCA64TLL48;
+						ProvisioningStyle = Automatic;
+					};
 					FEC078D3EC868B3375093B74 = {
+						DevelopmentTeam = HCA64TLL48;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -225,6 +318,7 @@
 			projectRoot = "";
 			targets = (
 				FEC078D3EC868B3375093B74 /* SOR */,
+				A920EF8DBF4C65A2535493BC /* SORWidget */,
 			);
 		};
 /* End PBXProject section */
@@ -239,16 +333,35 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2A4EE9116B5E9FBD954641BC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				097A82ACAE2453DB4098BB30 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		6612B6217267A883F05D4BD5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				299B92BE1B65684227885D49 /* SORWidget.swift in Sources */,
+				F41EC7BA382AB7624C7A63B1 /* WidgetSnapshot.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FE6EA716AF4CFF327EDD51EB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				27C95FE7C4A4E11BF26A25D4 /* ActionItemsView.swift in Sources */,
+				8F226B28564352205728512E /* AppModel+Device.swift in Sources */,
 				C43C1845F0603EFE77C92927 /* AppModel+Team.swift in Sources */,
 				DB9EAD02C09D71469A27F364 /* AppModel.swift in Sources */,
+				B292D63612A6F3A881FCE559 /* CheckInScanner.swift in Sources */,
 				61001370F0D2E05B4566CD8A /* Components.swift in Sources */,
 				177E210D2C8DFC54CBB7C397 /* DemoData.swift in Sources */,
 				671FE0CE7001256E192E82F7 /* HomeView.swift in Sources */,
@@ -264,19 +377,49 @@
 				8513B57940BA6117D496B716 /* TeamCalendar.swift in Sources */,
 				1FDADAF5BE58A184E8848748 /* TeamView.swift in Sources */,
 				026D3A4C14ADFCAE679EF77E /* WebPageView.swift in Sources */,
+				FF3FC0B9B47724359A8DEB6B /* WidgetSnapshot.swift in Sources */,
 				D4AF8FAEC76C225FCED31E25 /* YouView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		D1E3F338EC765844165093E4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A920EF8DBF4C65A2535493BC /* SORWidget */;
+			targetProxy = 5DE2576019E20855F1570B63 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		250D6B3BA437BE1BE9BE971E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = "TEMP_4A023B27-62B8-405B-A742-285BE8C13902" /* Config.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "$(WIDGET_ENTITLEMENTS)";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = SORWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_BASE).widget";
+				PRODUCT_NAME = SORWidget;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
 		2E391173AC58FA6CD74EEDF8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = "TEMP_57473DDE-4663-407C-ACE6-64186E4EB6F8" /* Config.xcconfig */;
+			baseConfigurationReference = "TEMP_4A023B27-62B8-405B-A742-285BE8C13902" /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "$(APP_ENTITLEMENTS)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				ENABLE_PREVIEWS = YES;
@@ -285,7 +428,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.systemoverload.team;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_BASE)";
 				PRODUCT_NAME = SOR;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -359,10 +502,11 @@
 		};
 		7E90536DEBD3F51D5621A134 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = "TEMP_57473DDE-4663-407C-ACE6-64186E4EB6F8" /* Config.xcconfig */;
+			baseConfigurationReference = "TEMP_4A023B27-62B8-405B-A742-285BE8C13902" /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "$(APP_ENTITLEMENTS)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				ENABLE_PREVIEWS = YES;
@@ -371,7 +515,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.systemoverload.team;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_BASE)";
 				PRODUCT_NAME = SOR;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -436,9 +580,38 @@
 			};
 			name = Release;
 		};
+		F0BC86EB6C9C401F052D1AAB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = "TEMP_4A023B27-62B8-405B-A742-285BE8C13902" /* Config.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "$(WIDGET_ENTITLEMENTS)";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = SORWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_BASE).widget";
+				PRODUCT_NAME = SORWidget;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		4C9FC15CAD55EA148DE06C3B /* Build configuration list for PBXNativeTarget "SORWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F0BC86EB6C9C401F052D1AAB /* Debug */,
+				250D6B3BA437BE1BE9BE971E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		4CBBDD360BB8F000CE566812 /* Build configuration list for PBXNativeTarget "SOR" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -479,6 +652,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0B2266AB25623D81EE8B017C /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 538F6D729F6BBD1AED5898E7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
 		4FE906D9E383E838926D6D14 /* GoogleSignIn */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C90C80D6BB064EB827DD3B09 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;

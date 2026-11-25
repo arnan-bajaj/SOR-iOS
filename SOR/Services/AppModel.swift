@@ -39,6 +39,15 @@ final class AppModel {
     var toast: String?
     /// Saving the first-time answers failed: let them in anyway, like the website does.
     var askSkipped = false
+    /// Your users/{uid} document as stored (push settings live in it).
+    var profileDoc: Doc = [:]
+    var openLink: AppLink?
+    var pushAllowed = true
+    @ObservationIgnored var pushToken: String?
+    @ObservationIgnored var pendingPushToken: String?
+    @ObservationIgnored var widgetTimer: Timer?
+    /// For the app delegate (push tokens, tapped notifications), which SwiftUI doesn't hand the model to.
+    @ObservationIgnored static weak var shared: AppModel?
 
     @ObservationIgnored private var authHandle: AuthStateDidChangeListenerHandle?
     @ObservationIgnored private var profileReg: ListenerRegistration?
@@ -206,8 +215,11 @@ final class AppModel {
 
     func signOut() {
         if demo { phase = .signedOut; return }
-        GIDSignIn.sharedInstance.signOut()
-        try? Auth.auth().signOut()
+        Task {
+            await forgetPushToken() // while still signed in, so the rules allow it
+            GIDSignIn.sharedInstance.signOut()
+            try? Auth.auth().signOut()
+        }
     }
 
     private func authChanged(_ user: User?) {
@@ -258,6 +270,7 @@ final class AppModel {
         }
         let p = Person(id: snap.documentID, data)
         profile = p
+        profileDoc = data
         if autoAdmin && p.role != .admin { db.document("users/\(uid)").updateData(["role": "admin"]) }
         // Keep the Google name and photo in step, unless an admin renamed them (nameEdited).
         var sync: Doc = [:]
@@ -268,7 +281,11 @@ final class AppModel {
         if p.onboardedAt == 0 && !askSkipped { stopTeam(); phase = .onboarding; return }
         if !canRead { stopTeam(); phase = .pending; return }
         if teamRegs.isEmpty { startTeam() }
-        phase = .ready
+        if phase != .ready {
+            phase = .ready
+            setUpPush()
+            if let t = pendingPushToken { pendingPushToken = nil; savePushToken(t) }
+        }
     }
 
     // MARK: - Live data
@@ -289,7 +306,7 @@ final class AppModel {
         listen("users", db.collection("users")) { [weak self] in self?.users = $0.map { Person(id: $0.documentID, $0.data()) } }
         listen("subteams", db.collection("subteams")) { [weak self] in self?.subteams = $0.map { Subteam(id: $0.documentID, $0.data()) } }
         listen("columns", db.collection("columns")) { [weak self] in self?.columns = $0.map { BoardColumn(id: $0.documentID, $0.data()) } }
-        listen("tasks", db.collection("tasks")) { [weak self] in self?.allTasks = $0.map { TaskItem(id: $0.documentID, $0.data()) } }
+        listen("tasks", db.collection("tasks")) { [weak self] in self?.allTasks = $0.map { TaskItem(id: $0.documentID, $0.data()) }; self?.updateWidget() }
         listen("seasons", db.collection("seasons")) { [weak self] in self?.seasonDocs = $0.map { Season(id: $0.documentID, $0.data()) } }
         listen("meetings", db.collection("meetings")) { [weak self] in
             self?.meetingExtras = Dictionary($0.map { ($0.documentID, $0.data()) }, uniquingKeysWith: { a, _ in a })
@@ -298,6 +315,7 @@ final class AppModel {
         let back = Day.iso(Date().addingTimeInterval(-150 * 86400))
         listen("signups", db.collection("signups").whereField("date", isGreaterThanOrEqualTo: min(back, seasonFrom))) { [weak self] in
             self?.signups = $0.map { Signup(id: $0.documentID, $0.data()) }
+            self?.updateWidget()
         }
         listen("attendance", db.collection("attendance").whereField("uid", isEqualTo: uid)) { [weak self] in
             self?.myMarks = $0.map { Mark(id: $0.documentID, $0.data()) }
@@ -334,7 +352,7 @@ final class AppModel {
         lastIcs = ics
         Task.detached(priority: .userInitiated) {
             let list = TeamCalendar.events(fromICS: ics)
-            await MainActor.run { self.events = list; self.loaded.insert("calendar") }
+            await MainActor.run { self.events = list; self.loaded.insert("calendar"); self.updateWidget() }
         }
     }
 
@@ -498,6 +516,7 @@ final class AppModel {
         try await user.reauthenticate(with: GoogleAuthProvider.credential(withIDToken: idToken, accessToken: result.user.accessToken.tokenString))
 
         let me = uid
+        await forgetPushToken()
         profileReg?.remove(); profileReg = nil
         stopTeam()
         // Each can be refused until the rules let people delete their own documents; the account still goes.

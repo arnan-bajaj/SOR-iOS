@@ -5,7 +5,9 @@ import SwiftUI
 struct ActionItemsView: View {
     @Environment(AppModel.self) private var model
     var boardRoom = false
+    var startTrack: Track = .board
     @State private var track: Track = .board
+    @State private var started = false
     @State private var adding = false
     @State private var showDone = false
 
@@ -61,6 +63,7 @@ struct ActionItemsView: View {
             }
         }
         .sheet(isPresented: $adding) { NewActionItemView(track: boardRoom ? .board : track, confidential: boardRoom) }
+        .onAppear { if !started { started = true; track = startTrack } }
     }
 
     private func heading(_ day: String) -> String {

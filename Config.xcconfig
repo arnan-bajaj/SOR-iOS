@@ -5,3 +5,10 @@ GOOGLE_REVERSED_CLIENT_ID = com.googleusercontent.apps.14469766944-q6o4phn4d9om9
 
 // The Apple Developer team that signs the app (10 characters, from developer.apple.com › Membership).
 DEVELOPMENT_TEAM = HCA64TLL48
+
+// The app's bundle ID. Personal-team test installs override it (dev-install.sh) with org.systemoverload.team.dev.
+BUNDLE_BASE = org.systemoverload.team
+
+// Push, universal links and the shared widget data need a paid team. dev-install.sh blanks these for the Personal Team.
+APP_ENTITLEMENTS = SOR/SOR.entitlements
+WIDGET_ENTITLEMENTS = SORWidget/SORWidget.entitlements

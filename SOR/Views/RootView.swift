@@ -88,6 +88,7 @@ struct MainTabs: View {
             if new == .create { tab = old; creating = true } else { lastTab = new }
         }
         .sheet(isPresented: $creating) { NewTaskView() }
+        .sheet(item: Binding(get: { model.openLink }, set: { model.openLink = $0 })) { LinkSheet(link: $0) }
         #if DEBUG
         // Test hooks for the Simulator: -tab meetings, -openWeb analytics
         .onAppear {

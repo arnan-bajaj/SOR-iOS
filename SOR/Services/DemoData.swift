@@ -50,6 +50,7 @@ extension AppModel {
         events = TeamCalendar.events(fromICS: Self.demoICS())
         loaded = ["users", "subteams", "columns", "tasks", "settings", "calendar"]
         phase = .ready
+        updateWidget()
     }
 
     /// A small ICS feed relative to today, so the real parser and repeat rules run in the demo.

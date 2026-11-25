@@ -27,6 +27,19 @@ open SOR.xcodeproj
 3. **Signing.** Set `DEVELOPMENT_TEAM` in `Config.xcconfig` to the team ID of the account that will publish the app. The account owner adds you in App Store Connect › Users and Access (App Manager or Admin).
 4. Run `xcodegen generate` again, then build.
 
+## Test installs and releases
+
+- `./dev-install.sh`: a 7-day test copy on your plugged-in iPhone, signed with your free Personal Team (bundle `org.systemoverload.team.dev`; no push, universal links or live widget).
+- `./release.sh`: archive, cloud-sign with the App Store Connect API key (`~/.appstoreconnect/private_keys/`, never in the repo) and upload to TestFlight. The Apple account is an Individual membership, so this is the only way builds get signed from this Mac.
+- `tools/make-icon.swift`: draws the app icon (`swift tools/make-icon.swift out.png`).
+
+## Push, links, check-in, widget
+
+- Push: the app saves each phone's FCM token to `pushTokens/{token}` (rules: you write your own, nobody reads). The Slack bot sends them (`slack-bot/lib/push.mjs` on the `slack-bot-server` branch). What people turned off: `users/{uid}.push.<kind>`; kinds match `PushKind`. Apple needs the team's APNs key uploaded in Firebase › Project settings › Cloud Messaging.
+- Universal links: `applinks:team.systemoverload.org`; the site server serves `/.well-known/apple-app-site-association` (task, action, signups, checkin, agendas).
+- QR check-in: VisionKit scanner → the same `checkins` + `attendance` batch as the website (`checkIn(code:)`).
+- Widget: the app writes `WidgetSnapshot` to the app group `group.org.systemoverload.team`; the widget only reads it.
+
 ## Before the App Store
 
 - The website's `/privacy` page and the rules that let people delete their own `users`/`userDetails` documents must be live (both are in the SOR.github.io changes from 2026-11-24).

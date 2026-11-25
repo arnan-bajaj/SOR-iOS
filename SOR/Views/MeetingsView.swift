@@ -210,9 +210,7 @@ struct SignupRow: View {
 
 struct AttendancePage: View {
     @Environment(AppModel.self) private var model
-    @State private var askingCode = false
-    @State private var code = ""
-    @State private var checkIn: WebLink?
+    @State private var checkingIn = false
 
     var body: some View {
         let s = model.myScore
@@ -230,12 +228,11 @@ struct AttendancePage: View {
                     }
                     Text("Present counts 1, Partial ½, online shifts a third, like the team's sheet.")
                         .font(.footnote).foregroundStyle(.secondary)
-                    Button { code = ""; askingCode = true } label: {
-                        Label("Check in with the Monitor's code", systemImage: "number.square.fill").frame(maxWidth: .infinity).frame(height: 40)
+                    Button { checkingIn = true } label: {
+                        Label("Check in", systemImage: "qrcode.viewfinder").frame(maxWidth: .infinity).frame(height: 40)
                     }
                     .buttonStyle(.borderedProminent)
                     .buttonBorderShape(.roundedRectangle(radius: 12))
-                    Text("On time for the first 25 minutes; Partial after that. Or scan the QR code with the Camera.").font(.footnote).foregroundStyle(.secondary)
                 }
                 if model.isLead {
                     Card {
@@ -267,15 +264,7 @@ struct AttendancePage: View {
             }
             .padding(.horizontal, 16).padding(.bottom, 24)
         }
-        .alert("Check in", isPresented: $askingCode) {
-            TextField("4-digit code", text: $code).keyboardType(.numberPad)
-            Button("Check in") {
-                let digits = code.filter(\.isNumber)
-                if digits.count == 4 { checkIn = WebLink(title: "Check in", path: "checkin/\(digits)") }
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: { Text("Type the code shown on the meeting-room Monitor.") }
-        .navigationDestination(item: $checkIn) { WebPageView(title: $0.title, path: $0.path) }
+        .sheet(isPresented: $checkingIn) { CheckInSheet() }
     }
 }
 
