@@ -1,5 +1,13 @@
 # SOR Team Board for iPhone
 
+**Where things stand (2026-11-25):** version 1.0 is submitted to the App Store as an unlisted app (release set to manual). Still to do after approval: Apple's reply to the unlisted request, then **Release This Version**, then share the link (apps.apple.com/app/id<Apple ID>) on Slack / the website. App Review signs in with **Other sign-in** (a Firebase Email/Password account approved as Viewer); keep that account until review is done for each version. Listing text, review notes and privacy/age-rating answers: `AppStore/metadata.md`.
+
+Rules learned the hard way:
+- Never animate or blur full-screen backgrounds (`AppBackground` in `Views/Theme.swift`): it ran the iPhone's display server out of memory (screen flash + spinner).
+- Native screens don't change when the website does. A website feature change needs the matching change here and a new build.
+- `WebLink` and anything used in release code must not be `#if DEBUG`-only (a TestFlight upload failed on that).
+- The grant tracker was removed (Business is a normal board); don't re-add without asking.
+
 A native SwiftUI app for the FRC 6059 team board. It reads and writes the same Firestore database as the website (https://team.systemoverload.org) and is governed by the same `firestore.rules`. Every write mirrors the website's document shapes, so the website, the Slack bot and the app stay in step.
 
 - `project.yml`: the XcodeGen spec. Run `xcodegen generate` after adding or removing files; don't hand-edit `SOR.xcodeproj`
