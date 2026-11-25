@@ -18,8 +18,19 @@ struct CalEvent: Identifiable, Hashable {
     let end: Double // ms
     let dayKey: String
 
-    var startDate: Date { Date(timeIntervalSince1970: start / 1000) }
-    var endDate: Date { Date(timeIntervalSince1970: end / 1000) }
+    /// All-day events are stored at UTC midnight, which is the evening before in California. Place them by `dayKey`
+    /// (local midnight of that day), like the website, or Feb 27 shows as Feb 26.
+    var startDate: Date {
+        if allDay, let d = Day.date(dayKey) { return d }
+        return Date(timeIntervalSince1970: start / 1000)
+    }
+    var endDate: Date {
+        if allDay {
+            let days = max(1, Int(((end - start) / TeamCalendar.day).rounded()))
+            return Calendar.current.date(byAdding: .day, value: days, to: startDate) ?? startDate
+        }
+        return Date(timeIntervalSince1970: end / 1000)
+    }
 
     private static let competitionRE = try! NSRegularExpression(pattern: #"throwdown|classic|showdown|regional|district|championship|\bchamps\b|competition|scrimmage|invitational|qualifier|\bweek 0\b"#, options: .caseInsensitive)
     var isCompetition: Bool { Self.competitionRE.firstMatch(in: title, range: NSRange(title.startIndex..., in: title)) != nil }
