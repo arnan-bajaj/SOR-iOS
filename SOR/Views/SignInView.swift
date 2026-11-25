@@ -39,8 +39,14 @@ struct SignInView: View {
                 }
                 .font(.subheadline.weight(.semibold))
                 .padding(.top, 14)
-                Button("Privacy Policy") { privacy = AppModel.site.appending(path: "privacy") }
-                    .font(.footnote).padding(.top, 10).padding(.bottom, 24)
+                // Apple asks apps with posts and comments to have people agree to rules that ban objectionable content and abuse.
+                Text("By signing in you agree to the team's Community Rules: nothing offensive, abusive or private about others. The Board removes anything that breaks them and can remove the person.")
+                    .font(.caption).foregroundStyle(.secondary).multilineTextAlignment(.center).padding(.top, 18).padding(.horizontal, 32)
+                HStack(spacing: 18) {
+                    Button("Community Rules") { privacy = AppModel.site.appending(path: "support").appendingFragment("rules") }
+                    Button("Privacy Policy") { privacy = AppModel.site.appending(path: "privacy") }
+                }
+                .font(.footnote).padding(.top, 8).padding(.bottom, 24)
             }
         }
         .sheet(item: $privacy) { SafariView(url: $0).ignoresSafeArea() }
@@ -108,5 +114,13 @@ struct EmailSignInView: View {
             busy = false
             if error == nil { dismiss() }
         }
+    }
+}
+
+private extension URL {
+    func appendingFragment(_ f: String) -> URL {
+        var c = URLComponents(url: self, resolvingAgainstBaseURL: false)
+        c?.fragment = f
+        return c?.url ?? self
     }
 }

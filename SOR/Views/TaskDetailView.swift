@@ -9,6 +9,7 @@ struct TaskDetailView: View {
     @State private var newItem = ""
     @State private var comment = ""
     @State private var comments: [Comment] = []
+    @State private var reporting: ReportTarget?
     @State private var stopComments: (() -> Void)?
     @State private var pickingPeople = false
     @State private var pickingBackups = false
@@ -165,8 +166,9 @@ struct TaskDetailView: View {
             }
 
             Section("Comments") {
-                if comments.isEmpty { Text("No comments yet.").foregroundStyle(.secondary) }
-                ForEach(comments) { c in
+                let shown = comments.filter { !model.isBlocked($0.authorId) }
+                if shown.isEmpty { Text("No comments yet.").foregroundStyle(.secondary) }
+                ForEach(shown) { c in
                     HStack(alignment: .top, spacing: 10) {
                         PersonAvatar(id: c.authorId, size: 28)
                         VStack(alignment: .leading, spacing: 2) {
@@ -177,6 +179,12 @@ struct TaskDetailView: View {
                             Text(c.body)
                         }
                     }
+                    .contextMenu {
+                        ReportMenuItems(target: ReportTarget(kind: "comment", path: "tasks/\(t.id)/comments/\(c.id)", taskId: t.id, authorUid: c.authorId, text: c.body)) { reporting = $0 }
+                    }
+                }
+                if shown.count < comments.count {
+                    Text("Comments from people you blocked are hidden.").font(.caption).foregroundStyle(.secondary)
                 }
                 if edit {
                     HStack(alignment: .bottom) {
@@ -191,6 +199,11 @@ struct TaskDetailView: View {
 
             Section {
                 ShareLink(item: AppModel.site.appending(path: "task/\(t.id)")) { Label("Share link", systemImage: "link") }
+                if t.createdBy != model.uid {
+                    Button { reporting = ReportTarget(kind: "task", path: "tasks/\(t.id)", taskId: t.id, authorUid: t.createdBy, text: [t.title, t.description].filter { !$0.isEmpty }.joined(separator: "\n")) } label: {
+                        Label("Report this task", systemImage: "exclamationmark.bubble")
+                    }
+                }
                 if model.canDelete(t) {
                     Button(role: .destructive) {
                         model.archive(t)
@@ -207,6 +220,7 @@ struct TaskDetailView: View {
                 ToolbarItem(placement: .topBarTrailing) { Button("Done") { focus = nil } }
             }
         }
+        .sheet(item: $reporting) { ReportSheet(target: $0) }
         .sheet(isPresented: $pickingPeople) {
             PeoplePicker(selected: t.assigneeUids) { model.update(t, ["assigneeUids": $0]) }
         }

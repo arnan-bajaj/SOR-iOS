@@ -12,6 +12,7 @@ The SOR Team Board app and website (team.systemoverload.org) are run by FRC Team
 - **Meetings:** your meeting signups, attendance marks, check-ins, and "I'm here" notices.
 - **Slack:** if you link your Slack account, its member ID, so the team's Slack bot can match your reactions and messages to your account.
 - **The helper:** if you use the AI helper (on the website, or in the app after you allow it), your questions and the board details it needs are sent to Google's Gemini service, and every chat is saved so the team can stop misuse of the team's key.
+- **Reports:** if you report a comment, photo, message or task, the report (what was reported, a copy of its text, why, and your name) goes to the team's admins. People you block are remembered only on your phone.
 
 The app doesn't collect your location, contacts, health information or advertising identifiers.
 
@@ -24,7 +25,7 @@ Approved team members can see names, photos, tasks, comments and the meeting cal
 - **Google Firebase:** sign-in and the team's database.
 - **The team's server:** runs the website and the team's Slack bot.
 - **Slack:** for linked accounts and for meeting signups made in Slack.
-- **Google Gemini:** for the website's helper only.
+- **Google Gemini:** for the helper only (website and app).
 
 Each of these services handles data under its own privacy terms.
 
@@ -42,4 +43,4 @@ If this policy changes, we'll update this page and post the date at the top.
 
 ## Contact
 
-Any Board member or lead mentor.
+Email arnanbajaj@gmail.com, or ask any Board member or lead mentor.

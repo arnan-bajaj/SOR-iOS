@@ -112,6 +112,8 @@ struct MainTabs: View {
                 case "analytics": AnalyticsView()
                 case "actions": ActionItemsView()
                 case "helper": HelperView(helper: Helper())
+                case "reports": ReportsView()
+                case "report": ReportSheet(target: ReportTarget(kind: "comment", path: "tasks/t0/comments/c1", taskId: "t0", authorUid: "u-sam", text: "Example"))
                 case "biz": BoardView(boardId: "biz")
                 case "mine": BoardView(boardId: "mine").navigationDestination(for: TaskItem.self) { TaskDetailView(taskId: $0.id) }
                 default: TeamView()

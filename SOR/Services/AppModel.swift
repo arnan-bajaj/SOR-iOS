@@ -70,6 +70,10 @@ final class AppModel {
     var isHelperReviewer = false
     var roster: [RosterPerson] = []
     var teamReminders: [TeamReminder] = []
+    /// reports/{id}: admins only (AppModel+Safety)
+    var reports: [Report] = []
+    /// People you've blocked, on this phone (AppModel+Safety)
+    var blockedUids: Set<String> = []
     /// Subteam documents as stored (for fields the app rarely needs, like slackChannel)
     var subteamDocs: [String: Doc] = [:]
     @ObservationIgnored var photoCache: [String: UIImage] = [:]
@@ -316,6 +320,7 @@ final class AppModel {
         if !canRead { stopTeam(); phase = .pending; return }
         if teamRegs.isEmpty { startTeam() }
         if phase != .ready {
+            loadBlocked()
             phase = .ready
             setUpPush()
             if let t = pendingPushToken { pendingPushToken = nil; savePushToken(t) }

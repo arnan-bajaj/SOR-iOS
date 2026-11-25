@@ -9,7 +9,7 @@ extension AppModel {
         demoDocs = [:]; demoComments = [:]
         profile = nil; uid = ""; authName = ""; authEmail = ""
         users = []; subteams = []; columns = []; allTasks = []; settings = [:]; events = []; signups = []; myMarks = []
-        actionItems = []; privateActionItems = []; boardChannel = []; boardAgendaDocs = []; teamMarks = []; roster = []; teamReminders = []
+        actionItems = []; privateActionItems = []; boardChannel = []; reports = []; blockedUids = []; boardAgendaDocs = []; teamMarks = []; roster = []; teamReminders = []
         arrivals = []; loaded = []
         phase = FirebaseApp.app() == nil ? .notConfigured : .signedOut
     }
@@ -100,7 +100,11 @@ extension AppModel {
                 Signup(id: "\(e.id)__\(p.0)", ["meetingId": e.id, "uid": p.0, "name": p.1, "kind": p.2, "femaleAdult": p.3, "date": e.dayKey])
             }
         }
-        loaded = ["users", "subteams", "columns", "tasks", "settings", "calendar", "actionItems", "privateActionItems", "boardChannel", "teamAttendance", "signups", "attendance", "agendas", "roster", "teamReminders"]
+        loadBlocked()
+        reports = [Report(id: "rp1", ["kind": "comment", "path": "tasks/t0/comments/c1", "taskId": "t0", "authorUid": "u-sam", "authorName": "Sam Okafor",
+                                      "text": "Drive kP feels high on carpet. Let's try 0.04 after school.", "reason": ReportReason.spam.rawValue,
+                                      "note": "Example report: nothing wrong with this one.", "reporterName": "Maya Chen", "status": "open", "createdAt": Double(nowMs - 7_200_000)])]
+        loaded = ["users", "subteams", "columns", "tasks", "settings", "calendar", "actionItems", "privateActionItems", "boardChannel", "teamAttendance", "signups", "attendance", "agendas", "roster", "teamReminders", "reports"]
         phase = .ready
         updateWidget()
     }

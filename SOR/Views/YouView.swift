@@ -66,9 +66,27 @@ struct YouView: View {
                     if model.isHelperReviewer {
                         NavigationLink(value: YouPage.helperChats) { RowLabel(title: "Helper chats", systemImage: "sparkles", color: Brand.violet) }
                     }
+                    if model.isAdmin {
+                        NavigationLink(value: YouPage.reports) {
+                            HStack {
+                                RowLabel(title: "Reports", systemImage: "exclamationmark.bubble.fill", color: .orange)
+                                if !model.openReports.isEmpty {
+                                    Spacer()
+                                    Text("\(model.openReports.count) open").font(.caption.weight(.semibold)).foregroundStyle(.white)
+                                        .padding(.horizontal, 8).padding(.vertical, 3).background(.orange, in: Capsule())
+                                }
+                            }
+                        }
+                    }
                     if model.isLead {
                         NavigationLink(value: YouPage.signupRecords) { RowLabel(title: "Signup records", systemImage: "doc.text.fill", color: Brand.amber) }
                     }
+                }
+
+                Section {
+                    NavigationLink(value: YouPage.blocked) { RowLabel(title: "Blocked people", systemImage: "hand.raised.fill", color: .gray) }
+                } header: { Text("Safety") } footer: {
+                    Text("Long-press a comment, photo or message to report it or block its author. The Board reviews every report.")
                 }
 
                 Section("About") {
@@ -102,9 +120,12 @@ struct YouView: View {
                 case .helperChats: HelperChatsView()
                 case .signupRecords: SignupRecordsView()
                 case .notifications: NotificationSettingsView()
+                case .reports: ReportsView()
+                case .blocked: BlockedPeopleView()
                 }
             }
             .sheet(item: $web) { SafariView(url: $0).ignoresSafeArea() }
+            .onAppear { model.wantReports() }
             .confirmationDialog("Delete your account?", isPresented: $confirmDelete, titleVisibility: .visible) {
                 Button("Delete my account", role: .destructive) { delete() }
             } message: {
@@ -124,7 +145,7 @@ struct YouView: View {
     }
 }
 
-enum YouPage: Hashable { case team, boardRoom, notifications, analytics, archive, helperChats, signupRecords }
+enum YouPage: Hashable { case team, boardRoom, notifications, analytics, archive, helperChats, signupRecords, reports, blocked }
 
 struct NotificationSettingsView: View {
     @Environment(AppModel.self) private var model

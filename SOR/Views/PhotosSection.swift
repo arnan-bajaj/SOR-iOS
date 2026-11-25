@@ -9,9 +9,10 @@ struct PhotosSection: View {
     @State private var picks: [PhotosPickerItem] = []
     @State private var adding = false
     @State private var viewing: String?
+    @State private var reporting: ReportTarget?
 
     var body: some View {
-        let live = task.photos.filter { $0.exp > Date().timeIntervalSince1970 * 1000 }
+        let live = task.photos.filter { $0.exp > Date().timeIntervalSince1970 * 1000 && !model.isBlocked($0.by) }
         Section {
             if !live.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -22,6 +23,7 @@ struct PhotosSection: View {
                                     if edit && (p.by == model.uid || model.isLead) {
                                         Button(role: .destructive) { Task { await model.removePhoto(task, p.id) } } label: { Label("Remove", systemImage: "trash") }
                                     }
+                                    ReportMenuItems(target: ReportTarget(kind: "photo", path: "photos/\(p.id)", taskId: task.id, authorUid: p.by, text: "Photo on “\(task.title)”")) { reporting = $0 }
                                 }
                         }
                     }
@@ -33,7 +35,7 @@ struct PhotosSection: View {
                 }
                 .disabled(live.count >= 8 || adding)
             }
-        } header: { Text("Photos") } footer: { Text("Photos last 14 days. Long-press one to remove it.") }
+        } header: { Text("Photos") } footer: { Text("Photos last 14 days. Long-press one to remove or report it.") }
         .listRowBackground(Color.row)
         .onChange(of: picks) { _, items in
             guard !items.isEmpty else { return }
@@ -48,6 +50,7 @@ struct PhotosSection: View {
                 adding = false
             }
         }
+        .sheet(item: $reporting) { ReportSheet(target: $0) }
         .sheet(item: Binding(get: { viewing.map { PhotoID(id: $0) } }, set: { viewing = $0?.id })) { p in
             PhotoFull(id: p.id)
         }

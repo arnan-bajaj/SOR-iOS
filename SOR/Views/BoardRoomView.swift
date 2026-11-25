@@ -31,6 +31,7 @@ private struct BoardChannelView: View {
     @Environment(AppModel.self) private var model
     @State private var text = ""
     @State private var choosingSeason = false
+    @State private var reporting: ReportTarget?
     @FocusState private var typing: Bool
 
     var body: some View {
@@ -41,13 +42,14 @@ private struct BoardChannelView: View {
                         seasonCard
                         if !model.loaded.contains("boardChannel") && !model.demo { SkeletonRows(count: 4) }
                         else if model.boardChannel.isEmpty { Text("No messages yet.").foregroundStyle(.secondary).padding(.top, 20) }
-                        ForEach(model.boardChannel) { m in message(m).id(m.id) }
+                        ForEach(model.boardChannel.filter { !model.isBlocked($0.authorId) }) { m in message(m).id(m.id) }
                     }
                     .padding(.horizontal, 16).padding(.bottom, 12)
                 }
                 .onChange(of: model.boardChannel.count) { _, _ in withAnimation { proxy.scrollTo(model.boardChannel.last?.id, anchor: .bottom) } }
                 .onAppear { proxy.scrollTo(model.boardChannel.last?.id, anchor: .bottom) }
             }
+            .sheet(item: $reporting) { ReportSheet(target: $0) }
             if model.isBoardMember {
                 HStack(alignment: .bottom, spacing: 10) {
                     TextField("Message the Board", text: $text, axis: .vertical).lineLimit(1...5).focused($typing)
@@ -100,6 +102,9 @@ private struct BoardChannelView: View {
                         .foregroundStyle(mine ? .white : .primary)
                 }
                 if mine { EmptyView() } else { Spacer(minLength: 40) }
+            }
+            .contextMenu {
+                ReportMenuItems(target: ReportTarget(kind: "message", path: "boardChannel/\(m.id)", authorUid: m.authorId, text: m.text)) { reporting = $0 }
             }
         }
     }

@@ -65,28 +65,61 @@ robotics,FRC,FIRST,team,tasks,kanban,meetings,signups,attendance,check-in,action
 - **Support URL:** https://team.systemoverload.org/support
 - **Marketing URL:** https://team.systemoverload.org (optional)
 - **Copyright:** `2026 System Overload Robotics`
-- **Version:** 1.0 · **Build:** 202611242044 (or newer)
+- **Version:** 1.0.1 · **Build:** 202611251159 (or newer)
 
 ## App Review Information
 
-- **Sign-in required:** yes
-  - **User name:** the reviewer email you made in Firebase (Authentication › Users), e.g. `appreview@systemoverload.org`
-  - **Password:** its password
-- **Contact:** your name, a phone number Apple can reach, your email
-- **Notes:**
+Rejected 2026-11-25 under 2.1 (Information Needed): Apple wants a screen recording plus answers to six questions in the Notes. Resubmit with:
+
+- **Version:** rename the App Store version from 1.0 to **1.0.1** (the Version field on the version page), then pick build **202611251159** or newer.
+- **Sign-in required:** yes, two Other sign-in accounts (Firebase › Authentication › Users, both approved as Viewer): one to look around, one Apple can delete.
+- **Attachment:** the screen recording (App Review Information › Attachment).
+
+### Screen recording (on your iPhone, latest iOS, TestFlight build 202611251159)
+
+Control Center › Screen Recording, then, in one take (2–4 minutes):
+1. Start on the Home Screen and open SOR Team (launch must be in the recording).
+2. Sign-in screen: point at the Community Rules line, then **Other sign-in** with the second review account.
+3. Home: stats, the next meeting, the competition countdown.
+4. Tasks › a board › a task: details, comments, photos.
+5. Long-press a comment › **Report** › pick a reason › Send. Long-press again › **Block**, show the comment disappear. You › Blocked people › Unblock.
+6. Meetings: calendar, signups, attendance.
+7. The sparkle button: the helper's Gemini permission screen (Allow, ask one question).
+8. You › Reports (needs an admin account: either show it from your own account in a second short clip, or skip it).
+9. You › **Delete my account** › confirm. It returns to the sign-in screen.
+
+### Notes (paste into App Review Information › Notes)
 
 ```
-SOR Team Board is an internal app for the members of FRC Team 6059 System Overload Robotics (a high-school robotics team): students, mentors, parents and the team's Board. We've requested unlisted distribution: only people with our link should find it.
+1. SCREEN RECORDING
+Attached. Recorded on an iPhone running the latest iOS with this build: launch, sign-in, the main screens, reporting and blocking, the AI helper's permission screen, and account deletion.
 
-How to sign in: on the first screen tap "Other sign-in" and use the account above. It's an approved Viewer on the team board, so it can look at everything a regular member can but can't change team data. Team members sign in with their Google accounts, and every new account has to be approved by a Board member before it can see anything.
+2. PURPOSE AND AUDIENCE
+SOR Team Board is the internal app for FRC Team 6059 System Overload Robotics, a high-school robotics team (about 40 students plus mentors, parents and a student/parent Board). It replaces spreadsheets and scattered Slack threads: each subteam's task board, the meeting calendar, meeting signups, QR check-in and attendance scores, and the Board's action items, in one place that matches the team's website (team.systemoverload.org). It is only useful to members of this team, so we have requested unlisted distribution.
 
-No account needed: "Look around the demo" on the first screen opens the whole app with made-up people and data. Nothing in the demo is saved.
+3. HOW TO ACCESS IT
+On the first screen tap "Other sign-in" and use either account below. Both are approved Viewers: they can see everything a regular member sees but can't change team data. Please use the second account to try account deletion (You > Delete my account); the first stays for future reviews.
+  Account 1: <email 1> / <password 1>
+  Account 2: <email 2> / <password 2>
+No account needed: "Look around the demo" on the first screen opens the whole app with made-up people and data; nothing is saved.
+Team members sign in with Google, and every new account must be approved by a Board member before it can see anything. Main features: Home; Tasks (each subteam's board and task details); Meetings (calendar, signups, attendance, QR check-in); You (notifications, report/block, account deletion).
 
-Features to try: Home; Tasks (each subteam's board, task details); Meetings (calendar, signups, attendance with QR check-in, agendas); You (notifications, account deletion under You › Delete my account).
+USER CONTENT AND SAFETY
+Members can write task comments, add task photos and post in the Board's private channel, only inside their approved team. Everyone agrees to the team's Community Rules on the sign-in screen (no objectionable content or abuse; team.systemoverload.org/support#rules). Long-press any comment, photo or message to Report it or Block its author; tasks have "Report this task". Reports go to the team's admins (the Board and lead mentors), who review them within 24 hours in You > Reports and can remove the content and remove the person from the team. Blocking hides that person's content immediately. Contact: arnanbajaj@gmail.com.
 
-The optional helper (sparkle button on Home) is run by Google Gemini. It shows what will be sent to Google and asks permission before the first message; nothing is sent until the person taps Allow.
+4. EXTERNAL SERVICES
+- Google Firebase: Authentication (Google and email sign-in), Cloud Firestore (the team's database), Cloud Messaging (notifications, delivered through Apple Push Notification service).
+- Google Sign-In.
+- Google Gemini: the optional helper, called through the team's own server. It asks permission before anything is sent.
+- The team's own server (team.systemoverload.org): the website, privacy policy, support page and the helper's connection to Gemini.
+- Google Calendar and Slack feed the team's calendar and signups into the database on the server side; the app doesn't connect to them directly.
+No payments, ads, analytics or tracking.
 
-Accounts can be deleted in the app: You › Delete my account.
+5. REGIONS
+The app works the same everywhere; there are no regional differences. It's offered in the United States, where the team is.
+
+6. REGULATED INDUSTRY / THIRD-PARTY MATERIAL
+Not applicable. The app isn't in a regulated industry and shows only the team's own content.
 ```
 
 ## App Privacy (the "nutrition label")
