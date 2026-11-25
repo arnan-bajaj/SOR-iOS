@@ -61,21 +61,17 @@ struct HelperView: View {
         }
     }
 
-    /// Before the first message: what goes to Google, and a clear yes or no.
+    /// Before the first message: what goes to Google, and a clear yes or no. Short enough to fit the half-height sheet.
     private var consent: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 10) {
-                IconTile(systemImage: "sparkles", color: Brand.violet, size: 38)
-                Text("Before you use the helper").font(.title3.weight(.bold))
+                IconTile(systemImage: "sparkles", color: Brand.violet, size: 30)
+                Text("Before you use the helper").font(.headline)
             }
-            Text("The helper is run by **Google Gemini**, a service outside the team. To answer you, the app sends Google:")
-            VStack(alignment: .leading, spacing: 6) {
-                Label("What you type to the helper", systemImage: "text.bubble")
-                Label("Your name and the team board's open tasks, people, upcoming meetings and action items", systemImage: "person.3")
-            }
-            .font(.subheadline)
-            Text("It never sends emails, attendance, private answers or anything confidential. Every chat is also saved by the team so misuse of its Gemini key can be stopped. See the Privacy Policy for more.")
-                .font(.subheadline).foregroundStyle(.secondary)
+            Text("The helper runs on **Google Gemini**, outside the team. It sends Google what you type, your name, and the board's open tasks, people, upcoming meetings and action items.")
+                .font(.subheadline)
+            Text("Never emails, attendance, private answers or anything confidential. The team saves chats to stop misuse of its key. See the Privacy Policy.")
+                .font(.footnote).foregroundStyle(.secondary)
             HStack {
                 Button("Not now") { model.showHelper = false }.buttonStyle(.bordered)
                 Spacer()
@@ -85,9 +81,9 @@ struct HelperView: View {
                 } label: { Text("Allow").fontWeight(.semibold).frame(minWidth: 80) }
                 .buttonStyle(.borderedProminent).tint(Brand.violet)
             }
-            .padding(.top, 4)
+            .padding(.top, 2)
         }
-        .padding(16)
+        .padding(14)
         .glass(20, tint: Brand.violet)
     }
 

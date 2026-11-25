@@ -94,13 +94,14 @@ struct MainTabs: View {
         .sheet(item: Binding(get: { model.openLink }, set: { model.openLink = $0 })) { LinkSheet(link: $0) }
         .sheet(isPresented: Binding(get: { model.showHelper }, set: { model.showHelper = $0 })) { HelperView(helper: helper) }
         #if DEBUG
-        // Test hooks for the Simulator: -tab meetings, -openWeb analytics
+        // Test hooks for the Simulator: -tab meetings, -openWeb analytics, -openHelper
         .onAppear {
             let args = ProcessInfo.processInfo.arguments
             func arg(_ k: String) -> String? { args.firstIndex(of: k).flatMap { $0 + 1 < args.count ? args[$0 + 1] : nil } }
             if let t = arg("-tab") { tab = ["tasks": .tasks, "meetings": .meetings, "you": .you][t] ?? .home }
             if let w = arg("-openWeb") { debugWeb = WebLink(title: w, path: w) }
             if let n = arg("-openNative") { debugNative = n }
+            if args.contains("-openHelper") { model.showHelper = true }
         }
         .sheet(item: $debugWeb) { link in NavigationStack { WebPageView(title: link.title, path: link.path) } }
         .fullScreenCover(item: Binding(get: { debugNative.map { WebLink(title: $0, path: $0) } }, set: { debugNative = $0?.path })) { l in
