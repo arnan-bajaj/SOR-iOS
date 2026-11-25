@@ -102,12 +102,19 @@ struct BoardView: View {
     var body: some View {
         VStack(spacing: 0) {
             columnTabs
-            TabView(selection: $columnId) {
-                ForEach(cols) { c in
-                    columnList(c).tag(c.id)
+            // A paging scroll view, not a page-style TabView: that one kept pages it hadn't shown yet stale, so tapping
+            // Grants on Business said "Nothing here." until you switched away and back.
+            ScrollView(.horizontal) {
+                HStack(spacing: 0) {
+                    ForEach(cols) { c in
+                        columnList(c).containerRelativeFrame(.horizontal).id(c.id)
+                    }
                 }
+                .scrollTargetLayout()
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
+            .scrollTargetBehavior(.paging)
+            .scrollIndicators(.hidden)
+            .scrollPosition(id: Binding(get: { columnId.isEmpty ? nil : columnId }, set: { if let id = $0 { columnId = id } }))
         }
         .appBackground()
         .navigationTitle(isMine ? "My Work" : board?.name ?? "Board")

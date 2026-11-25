@@ -48,6 +48,7 @@ extension AppModel {
             ("Sponsor thank-you letters", "biz", "todo", ["demo-you"], 12, "med", []),
             ("Robot reveal video", "media", "todo", [], nil, "med", []),
             ("Bench test the climber", "mech", "done", ["u-leo", "demo-you"], -3, "med", []),
+            ("Community foundation grant application", "biz", "grants", ["u-priya"], 21, "high", [("Draft budget", true), ("Mentor review", false), ("Submit", false)]),
         ]
         var docs: [String: Doc] = [:]
         for (i, s) in seed.enumerated() {
