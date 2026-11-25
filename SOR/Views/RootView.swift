@@ -112,6 +112,7 @@ struct MainTabs: View {
                 case "actions": ActionItemsView()
                 case "helper": HelperView(helper: Helper())
                 case "biz": BoardView(boardId: "biz")
+                case "mine": BoardView(boardId: "mine").navigationDestination(for: TaskItem.self) { TaskDetailView(taskId: $0.id) }
                 default: TeamView()
                 }
             }

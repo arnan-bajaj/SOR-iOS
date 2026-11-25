@@ -90,6 +90,15 @@ extension AppModel {
             return Mark(id: "mk\(w)\(i)", ["meetingId": "demo-\(w)", "date": day(-7 * (8 - w)), "title": "Hangar Build Session", "uid": n.0, "name": n.1, "kind": "student", "status": st])
         } }
         events = TeamCalendar.events(fromICS: Self.demoICS())
+        // A few people going to what's coming up, adults included, so Signups looks like a real week
+        let nowMs = Date().timeIntervalSince1970 * 1000
+        let going: [(String, String, String, Bool)] = [("u-sam", "Sam Okafor", "student", false), ("u-maya", "Maya Chen", "student", false),
+                                                     ("demo-you", "Alex Rivera", "student", false), ("u-pat", "Pat Brooks", "parent", true), ("u-lee", "Morgan Lee", "mentor", false)]
+        signups = events.filter { $0.end > nowMs && !$0.allDay }.prefix(5).enumerated().flatMap { i, e in
+            going.prefix(i == 0 ? 5 : 2 + i % 3).map { p in
+                Signup(id: "\(e.id)__\(p.0)", ["meetingId": e.id, "uid": p.0, "name": p.1, "kind": p.2, "femaleAdult": p.3, "date": e.dayKey])
+            }
+        }
         loaded = ["users", "subteams", "columns", "tasks", "settings", "calendar", "actionItems", "privateActionItems", "boardChannel", "teamAttendance", "signups", "attendance", "agendas", "roster", "teamReminders"]
         phase = .ready
         updateWidget()

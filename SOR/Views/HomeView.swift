@@ -12,7 +12,7 @@ struct HomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     header
-                    if model.demo { demoBanner }
+                    if model.demo && !Self.screenshots { demoBanner }
                     stats
                     if let m = model.meetingNow { hereCard(m) }
                     else if let sh = model.openShifts.first, let e = sh.event { hereCard(e) }
@@ -65,6 +65,15 @@ struct HomeView: View {
     }
 
     // MARK: Demo
+
+    /// App Store screenshots (launch argument -screenshots, debug builds only) leave out the demo banner.
+    private static let screenshots: Bool = {
+        #if DEBUG
+        return ProcessInfo.processInfo.arguments.contains("-screenshots")
+        #else
+        return false
+        #endif
+    }()
 
     private var demoBanner: some View {
         HStack(spacing: 12) {
