@@ -8,7 +8,8 @@ struct ActionItemsView: View {
     /// Inside the Board Room, which has its own title and background
     var embedded = false
     var startTrack: Track = .board
-    @State private var showAgendas = false
+    enum Part: String { case todos = "To-dos", agendas = "Agendas", reminders = "Reminders" }
+    @State private var part: Part = .todos
     @State private var track: Track = .board
     @State private var started = false
     @State private var adding = false
@@ -21,11 +22,18 @@ struct ActionItemsView: View {
             if !boardRoom {
                 VStack(spacing: 8) {
                     Picker("Meeting", selection: $track) { ForEach(Track.allCases) { Text($0.label).tag($0) } }.pickerStyle(.segmented)
-                    Picker("Show", selection: $showAgendas) { Text("To-dos").tag(false); Text("Agendas").tag(true) }.pickerStyle(.segmented)
+                    Picker("Show", selection: $part) {
+                        Text("To-dos").tag(Part.todos); Text("Agendas").tag(Part.agendas)
+                        if track != .ops { Text("Reminders").tag(Part.reminders) } // Operations has no Slack channel
+                    }
+                    .pickerStyle(.segmented)
+                    .onChange(of: track) { _, t in if t == .ops && part == .reminders { part = .todos } }
                 }
                 .padding(.horizontal, 16).padding(.bottom, 6)
             }
-            if showAgendas && !boardRoom { AgendaDocsList(track: track) } else { itemList }
+            if boardRoom || part == .todos { itemList }
+            else if part == .agendas { AgendaDocsList(track: track) }
+            else { TeamRemindersView(track: track) }
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -56,7 +64,7 @@ struct ActionItemsView: View {
             ForEach(groups.keys.sorted(by: >), id: \.self) { day in
                 Section(heading(day)) {
                     ForEach(groups[day]!.sorted { !$0.done && $1.done || ($0.done == $1.done && $0.createdAt < $1.createdAt) }) { a in
-                        ActionItemRow(item: a)
+                        NavigationLink(value: a) { ActionItemRow(item: a) }
                             .swipeActions {
                                 if model.canRemove(a) { Button("Delete", role: .destructive) { model.deleteItem(a) } }
                             }
@@ -66,6 +74,7 @@ struct ActionItemsView: View {
             }
         }
         .scrollContentBackground(.hidden)
+        .navigationDestination(for: ActionItem.self) { ActionItemDetailView(itemId: $0.id, confidential: $0.confidential) }
     }
 
     private func heading(_ day: String) -> String {
@@ -83,7 +92,7 @@ struct ActionItemRow: View {
                 Image(systemName: item.done ? "checkmark.circle.fill" : "circle").font(.title3)
                     .foregroundStyle(item.done ? .green : .secondary)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.borderless) // its own tap, separate from opening the item
             .disabled(!model.canChange(item))
             VStack(alignment: .leading, spacing: 6) {
                 Text(item.text).strikethrough(item.done).foregroundStyle(item.done ? .secondary : .primary)

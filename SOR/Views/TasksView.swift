@@ -23,11 +23,6 @@ struct TasksView: View {
                     NavigationLink(value: TasksPage.timeline) {
                         BoardRow(name: "Timeline", color: .indigo, systemImage: "calendar.day.timeline.left", count: 0)
                     }
-                    if model.canGrants {
-                        NavigationLink(value: WebLink(title: "Grants", path: "grants")) {
-                            BoardRow(name: "Grants", color: .purple, systemImage: "dollarsign.circle", count: 0)
-                        }
-                    }
                 }
                 .listRowBackground(Color.row)
                 Section("Boards") {
@@ -51,6 +46,8 @@ struct TasksView: View {
             .navigationDestination(for: String.self) { BoardView(boardId: $0) }
             .navigationDestination(for: TaskItem.self) { TaskDetailView(taskId: $0.id) }
             .navigationDestination(for: WebLink.self) { WebPageView(title: $0.title, path: $0.path) }
+            .navigationDestination(for: Grant.self) { GrantDetailView(grantId: $0.id) }
+            .navigationDestination(for: GrantPage.self) { $0 == .library ? AnyView(GrantLibraryView()) : AnyView(GrantInfoView()) }
             .navigationDestination(for: TasksPage.self) { page in
                 switch page {
                 case .actions: ActionItemsView()
@@ -90,7 +87,13 @@ struct BoardView: View {
 
     private var isMine: Bool { boardId == "mine" }
     private var board: Subteam? { model.subteam(boardId) }
-    private var cols: [BoardColumn] { model.columns(for: isMine ? "all" : boardId) }
+    /// The Grants column is the Business team's grant tracker (only for people who can see grants), not a task column.
+    private var cols: [BoardColumn] {
+        model.columns(for: isMine ? "all" : boardId).filter { $0.id != "grants" || (boardId == "biz" && model.canGrants) }
+    }
+    private func count(_ c: BoardColumn) -> Int {
+        c.id == "grants" ? model.grants.filter { $0.working || $0.status == "not-open" }.count : tasks(in: c.id).count
+    }
 
     private func tasks(in col: String) -> [TaskItem] {
         model.tasks
@@ -105,7 +108,7 @@ struct BoardView: View {
             columnTabs
             TabView(selection: $columnId) {
                 ForEach(cols) { c in
-                    columnList(c).tag(c.id)
+                    Group { if c.id == "grants" { GrantsColumn() } else { columnList(c) } }.tag(c.id)
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
@@ -128,7 +131,13 @@ struct BoardView: View {
             }
         }
         .sheet(isPresented: $creating) { NewTaskView(subteamId: boardId, columnId: columnId) }
-        .onAppear { if columnId.isEmpty { columnId = cols.first { $0.id == "todo" }?.id ?? cols.first?.id ?? "" } }
+        .onAppear {
+            if columnId.isEmpty { columnId = cols.first { $0.id == "todo" }?.id ?? cols.first?.id ?? "" }
+            #if DEBUG
+            let args = ProcessInfo.processInfo.arguments
+            if let i = args.firstIndex(of: "-column"), i + 1 < args.count { columnId = args[i + 1] }
+            #endif
+        }
     }
 
     private var columnTabs: some View {
@@ -141,7 +150,7 @@ struct BoardView: View {
                     } label: {
                         HStack(spacing: 6) {
                             Text(c.name)
-                            Text("\(tasks(in: c.id).count)").foregroundStyle(on ? .white.opacity(0.8) : .secondary).monospacedDigit()
+                            Text("\(count(c))").foregroundStyle(on ? .white.opacity(0.8) : .secondary).monospacedDigit()
                         }
                         .font(.subheadline.weight(.semibold))
                         .padding(.horizontal, 14).padding(.vertical, 8)

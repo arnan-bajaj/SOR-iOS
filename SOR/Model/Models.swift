@@ -148,9 +148,21 @@ struct TaskItem: Identifiable, Hashable {
     var createdAt: Double
     var updatedAt: Double
     var commentCount: Int
+    var estHours: String
+    var subsystem: String
+    var dod: String
+    var reminders: [Int]
+    var photos: [PhotoRef]
+
+    struct PhotoRef: Hashable { var id: String; var exp: Double; var by: String }
 
     init(id: String, _ d: Doc) {
         self.id = id
+        estHours = (d["estHours"] as? NSNumber).map { "\($0)" } ?? d.str("estHours")
+        subsystem = d.str("subsystem")
+        dod = d.str("dod")
+        reminders = (d["reminders"] as? [Any])?.compactMap { ($0 as? NSNumber)?.intValue } ?? []
+        photos = d.docs("photos").map { PhotoRef(id: $0.str("id"), exp: $0.num("exp"), by: $0.str("by")) }
         title = d.str("title")
         description = d.str("description")
         columnId = d.str("columnId")
@@ -389,8 +401,12 @@ struct ActionItem: Identifiable, Hashable {
     var createdAt: Double
     var seasonId: String
     var confidential: Bool
+    var reminders: [Int]
+    var promotedTaskId: String
     init(id: String, _ d: Doc, confidential: Bool = false) {
         self.id = id
+        reminders = (d["reminders"] as? [Any])?.compactMap { ($0 as? NSNumber)?.intValue } ?? []
+        promotedTaskId = d.str("promotedTaskId")
         text = d.str("text")
         ownerUids = d.strs("ownerUids").isEmpty ? (d.str("ownerUid").isEmpty ? [] : [d.str("ownerUid")]) : d.strs("ownerUids")
         dueDate = d.str("dueDate")
@@ -487,4 +503,67 @@ struct RosterPerson: Identifiable, Hashable {
         active = (d["active"] as? Bool) ?? true
         female = d.bool("female")
     }
+}
+
+/// A note the Slack bot posts in the Board's or Build Committee's channel on a date (teamReminders/{id}).
+struct TeamReminder: Identifiable, Hashable {
+    let id: String
+    var text, track, date, time, createdBy: String
+    var sendAt, sentAt: Double
+    init(id: String, _ d: Doc) {
+        self.id = id
+        text = d.str("text"); track = d.str("track"); date = d.str("date"); time = d.str("time"); createdBy = d.str("createdBy")
+        sendAt = d.num("sendAt"); sentAt = d.num("sentAt")
+    }
+}
+
+/// A grant or sponsor in the Business team's tracker (grants/{id}). Only admins and Business members can load these.
+struct Grant: Identifiable, Hashable {
+    let id: String
+    var raw: [String: String] // every text field, by name (the tracker has many and most are optional)
+    var status: String
+    var updatedAt: Double
+    init(id: String, _ d: Doc) {
+        self.id = id
+        var r: [String: String] = [:]
+        for (k, v) in d { if let s = v as? String { r[k] = s } }
+        raw = r
+        status = d.str("status").isEmpty ? "not-started" : d.str("status")
+        updatedAt = d.num("updatedAt")
+    }
+    subscript(_ k: String) -> String { raw[k] ?? "" }
+    var name: String { self["name"].isEmpty ? "Untitled grant" : self["name"] }
+
+    /// GRANT_STATUS in mod-grants
+    static let statuses: [(id: String, label: String, color: Color)] = [
+        ("not-open", "Not open yet", .purple), ("not-started", "Not started", .red), ("in-progress", "In progress", .orange),
+        ("complete", "100% complete", .green), ("submitted", "Submitted", .green), ("won", "Won", .blue),
+        ("rejected", "Rejected", .red), ("not-eligible", "Not eligible", .pink),
+    ]
+    var statusLabel: String { Self.statuses.first { $0.id == status }?.label ?? "Not started" }
+    var statusColor: Color { Self.statuses.first { $0.id == status }?.color ?? .red }
+    var working: Bool { ["not-started", "in-progress", "complete"].contains(status) }
+    /// "9/24/2026", "2026-11-01" → ISO; "rolling" and the like → ""
+    static func day(_ text: String) -> String {
+        let t = text.trimmingCharacters(in: .whitespaces)
+        if t.range(of: #"^\d{4}-\d{2}-\d{2}$"#, options: .regularExpression) != nil { return t }
+        let p = t.split(separator: "/").compactMap { Int($0) }
+        guard p.count == 3, t.range(of: #"^\d{1,2}/\d{1,2}/(\d{2}|\d{4})$"#, options: .regularExpression) != nil else { return "" }
+        return String(format: "%04d-%02d-%02d", p[2] < 100 ? 2000 + p[2] : p[2], p[0], p[1])
+    }
+}
+
+/// A past application answer (grantAnswers) and a team detail forms ask for (grantInfo).
+struct GrantAnswer: Identifiable, Hashable {
+    let id: String
+    var question, answer, grant, year, status: String
+    init(id: String, _ d: Doc) {
+        self.id = id; question = d.str("question"); answer = d.str("answer"); grant = d.str("grant"); year = d.str("year"); status = d.str("status")
+    }
+}
+struct GrantInfo: Identifiable, Hashable {
+    let id: String
+    var label, value, note: String
+    var position: Double
+    init(id: String, _ d: Doc) { self.id = id; label = d.str("label"); value = d.str("value"); note = d.str("note"); position = d.num("position") }
 }

@@ -69,6 +69,13 @@ final class AppModel {
     var teamMarks: [Mark] = []
     var isHelperReviewer = false
     var roster: [RosterPerson] = []
+    var teamReminders: [TeamReminder] = []
+    var grants: [Grant] = []
+    var grantAnswers: [GrantAnswer] = []
+    var grantInfo: [GrantInfo] = []
+    /// Subteam documents as stored (for fields the app rarely needs, like slackChannel)
+    var subteamDocs: [String: Doc] = [:]
+    @ObservationIgnored var photoCache: [String: UIImage] = [:]
     var femaleByUid: [String: Bool] = [:]
 
     /// Must match OWNER_EMAILS in index.html and isAutoAdmin() in firestore.rules.
@@ -316,7 +323,10 @@ final class AppModel {
 
     private func startTeam() {
         listen("users", db.collection("users")) { [weak self] in self?.users = $0.map { Person(id: $0.documentID, $0.data()) } }
-        listen("subteams", db.collection("subteams")) { [weak self] in self?.subteams = $0.map { Subteam(id: $0.documentID, $0.data()) } }
+        listen("subteams", db.collection("subteams")) { [weak self] docs in
+            self?.subteams = docs.map { Subteam(id: $0.documentID, $0.data()) }
+            self?.subteamDocs = Dictionary(docs.map { ($0.documentID, $0.data()) }, uniquingKeysWith: { a, _ in a })
+        }
         listen("columns", db.collection("columns")) { [weak self] in self?.columns = $0.map { BoardColumn(id: $0.documentID, $0.data()) } }
         listen("tasks", db.collection("tasks")) { [weak self] in self?.allTasks = $0.map { TaskItem(id: $0.documentID, $0.data()) }; self?.updateWidget() }
         listen("seasons", db.collection("seasons")) { [weak self] in self?.seasonDocs = $0.map { Season(id: $0.documentID, $0.data()) } }
