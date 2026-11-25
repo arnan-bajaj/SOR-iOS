@@ -18,7 +18,12 @@ struct AnalyticsView: View {
         .appBackground(Brand.teal)
         .navigationTitle("Analytics")
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear { model.wantTeamAttendance() }
+        .onAppear {
+            model.wantTeamAttendance()
+            #if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("-analyticsTasks") { tab = .tasks }
+            #endif
+        }
     }
 
     // MARK: Students
@@ -40,14 +45,28 @@ struct AnalyticsView: View {
             weekly
             VStack(alignment: .leading, spacing: 10) {
                 Text("Scores").font(.headline)
-                Chart(rows.prefix(15)) { r in
-                    BarMark(x: .value("Score", r.score.score), y: .value("Name", r.name.split(separator: " ").first.map(String.init) ?? r.name))
-                        .foregroundStyle(Brand.wash(r.uid == model.uid ? Brand.amber : Brand.teal))
-                        .cornerRadius(5)
-                        .annotation(position: .trailing) { Text(r.score.score.formatted(.number.precision(.fractionLength(0...2)))).font(.caption2.weight(.semibold)).foregroundStyle(.secondary) }
+                // Plain rows, not Swift Charts: its name axis drew the names on top of the bars on a phone.
+                let top = Array(rows.prefix(15))
+                let best = max(top.map(\.score.score).max() ?? 1, 0.01)
+                VStack(spacing: 8) {
+                    ForEach(top) { r in
+                        let mine = r.uid == model.uid
+                        HStack(spacing: 10) {
+                            Text(r.name.split(separator: " ").first.map(String.init) ?? r.name)
+                                .font(.caption.weight(mine ? .bold : .regular)).foregroundStyle(.secondary)
+                                .lineLimit(1).minimumScaleFactor(0.7).frame(width: 76, alignment: .leading)
+                            GeometryReader { g in
+                                Capsule().fill(Brand.wash(mine ? Brand.amber : Brand.teal))
+                                    .frame(width: max(4, g.size.width * r.score.score / best), height: 12)
+                                    .frame(maxHeight: .infinity, alignment: .center)
+                            }
+                            .frame(height: 16)
+                            Text(r.score.score.formatted(.number.precision(.fractionLength(0...2))))
+                                .font(.caption.weight(.semibold)).monospacedDigit().frame(width: 40, alignment: .trailing)
+                        }
+                    }
                 }
-                .chartXAxis(.hidden)
-                .frame(height: CGFloat(min(rows.count, 15)) * 26 + 10)
+                .padding(.top, 4)
             }
             .padding(16).glass(22)
             VStack(alignment: .leading, spacing: 0) {
@@ -111,21 +130,39 @@ struct AnalyticsView: View {
         }
         VStack(alignment: .leading, spacing: 10) {
             Text("By board").font(.headline)
-            Chart {
-                ForEach(model.boards) { b in
-                    let mine = all.filter { $0.subteamId == b.id }
-                    ForEach(model.columns(for: b.id)) { c in
-                        let n = mine.filter { $0.columnId == c.id }.count
-                        if n > 0 {
-                            BarMark(x: .value("Tasks", n), y: .value("Board", b.name))
-                                .foregroundStyle(by: .value("Status", c.name))
-                                .cornerRadius(4)
+            // Plain rows with stacked segments (not Swift Charts, whose axis labels landed on the bars on a phone)
+            let colors: [String: Color] = ["todo": Brand.blue, "doing": Brand.amber, "done": .green, "grants": Brand.violet]
+            let rowsByBoard = model.boards.map { b in
+                (b, model.columns(for: b.id).map { c in (c, all.filter { $0.subteamId == b.id && $0.columnId == c.id }.count) }.filter { $0.1 > 0 })
+            }
+            let most = max(rowsByBoard.map { $0.1.reduce(0) { $0 + $1.1 } }.max() ?? 1, 1)
+            VStack(spacing: 8) {
+                ForEach(rowsByBoard, id: \.0.id) { b, parts in
+                    let total = parts.reduce(0) { $0 + $1.1 }
+                    HStack(spacing: 10) {
+                        Text(b.name).font(.caption).foregroundStyle(.secondary)
+                            .lineLimit(1).minimumScaleFactor(0.7).frame(width: 96, alignment: .leading)
+                        GeometryReader { g in
+                            HStack(spacing: 2) {
+                                ForEach(parts, id: \.0.id) { c, n in
+                                    Capsule().fill(colors[c.id] ?? Brand.teal)
+                                        .frame(width: max(4, (g.size.width - CGFloat(parts.count) * 2) * CGFloat(n) / CGFloat(most)))
+                                }
+                            }
+                            .frame(height: 12).frame(maxHeight: .infinity)
                         }
+                        .frame(height: 16)
+                        Text("\(total)").font(.caption.weight(.semibold)).monospacedDigit().frame(width: 28, alignment: .trailing)
                     }
                 }
+                HStack(spacing: 14) {
+                    ForEach([("To Do", Brand.blue), ("In Progress", Brand.amber), ("Done", Color.green)]
+                            + (rowsByBoard.contains { $0.1.contains { $0.0.id == "grants" } } ? [("Grants", Brand.violet)] : []), id: \.0) { name, color in
+                        HStack(spacing: 5) { Circle().fill(color).frame(width: 8, height: 8); Text(name) }
+                    }
+                }
+                .font(.caption2).foregroundStyle(.secondary).padding(.top, 4)
             }
-            .chartForegroundStyleScale(["To Do": Brand.blue, "In Progress": Brand.amber, "Done": Color.green, "Grants": Brand.violet])
-            .frame(height: CGFloat(model.boards.count) * 30 + 40)
         }
         .padding(16).glass(22)
         let owners = Dictionary(grouping: open.flatMap { t in t.assigneeUids.map { ($0, t) } }, by: \.0).mapValues(\.count)
