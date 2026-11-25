@@ -1,7 +1,12 @@
 # App Store listing: SOR Team Board (iOS 1.0)
 
 Copy each block into App Store Connect › SOR Team Board › iOS App 1.0 (and App Information / App Privacy where noted).
-Screenshots are in `AppStore/screenshots/` (1320 × 2868, the 6.9" iPhone size; App Store Connect scales them for smaller iPhones).
+**Images to upload** (all opaque PNGs):
+- **iPhone screenshots:** `AppStore/screens/iPhone-6.9in/` (1320 × 2868). If App Store Connect says the size is wrong, it's asking for a different display: use `iPhone-6.9in-1290/` (1290 × 2796) for 6.9", or `iPhone-6.5in/` (1284 × 2778) / `iPhone-6.5in-1242/` (1242 × 2688) for a 6.5" slot. Drag them in the numbered order.
+- **Header** (Product Page Information › Header and Search Results): `AppStore/header.png` (3840 × 1646, 21:9)
+- **Search results:** `AppStore/search-results.png` (3840 × 2560, 3:2)
+- **App previews (videos):** optional; none for 1.0.
+- `AppStore/screenshots/` holds the raw captures (with transparency): don't upload those. `tools/make-banners.swift` redraws the header images.
 
 ---
 
