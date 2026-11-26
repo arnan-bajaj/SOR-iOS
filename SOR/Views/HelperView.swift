@@ -70,7 +70,7 @@ struct HelperView: View {
             }
             Text("The helper runs on **Google Gemini**, outside the team. It sends Google what you type, your name, and the board's open tasks, people, upcoming meetings and action items.")
                 .font(.subheadline)
-            Text("Never emails, attendance, private answers or anything confidential. The team saves chats to stop misuse of its key. See the Privacy Policy.")
+            Text("Never emails, attendance, private answers or anything confidential. See the Privacy Policy.")
                 .font(.footnote).foregroundStyle(.secondary)
             HStack {
                 Button("Not now") { model.showHelper = false }.buttonStyle(.bordered)
@@ -96,7 +96,7 @@ struct HelperView: View {
                     Text(model.canEdit ? "Or tell it what to change. Nothing changes until you tap Do it." : "Tasks, meetings, who's on what.").font(.caption).foregroundStyle(.secondary)
                 }
             }
-            Text("This runs on the team's own Gemini key, so we ask that you don't misuse it. Every chat is saved so misuse can be stopped. It can also get things wrong.")
+            Text("This runs on the team's own Gemini key, so we ask that you don't misuse it. It can also get things wrong.")
                 .font(.caption).foregroundStyle(.secondary)
             if !helper.off.isEmpty { Label(helper.off, systemImage: "exclamationmark.circle").font(.caption).foregroundStyle(.orange) }
             if helper.items.isEmpty {
