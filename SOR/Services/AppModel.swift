@@ -80,7 +80,7 @@ final class AppModel {
     var femaleByUid: [String: Bool] = [:]
 
     /// Must match OWNER_EMAILS in index.html and isAutoAdmin() in firestore.rules.
-    static let ownerEmails = ["rishik.kasula42@gmail.com"]
+    static let ownerEmails = ["rishik.kasula42@gmail.com", "arnanbajaj@gmail.com"]
     /// The website. `-site http://localhost:5173` points a debug run at the local server instead.
     static let site: URL = {
         let args = ProcessInfo.processInfo.arguments
